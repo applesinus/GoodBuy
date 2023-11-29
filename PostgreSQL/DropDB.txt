@@ -1,0 +1,8 @@
+drop table receipts_on_markets;
+drop table positions_in_receipts;
+drop table receipts;
+drop table positions;
+drop table products;
+drop table statuses;
+drop table markets;
+drop table product_categories;

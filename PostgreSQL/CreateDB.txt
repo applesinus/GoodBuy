@@ -1,0 +1,70 @@
+create table product_categories (
+    name text not null,
+    description text default '',
+    id serial primary key
+);
+
+
+create table products (
+    name text not null,
+    default_cost numeric(7, 2) not null,
+    category integer not null,
+    self_cost numeric(6, 2) default 0,
+    amount integer default 0,
+    id serial primary key,
+    foreign key (category) references product_categories (id)
+);
+
+
+create table statuses (
+    description text not null,
+    id serial primary key
+);
+insert into statuses values ('OK');
+insert into statuses values ('Refunding');
+insert into statuses values ('Successfully refunded');
+
+
+create table positions (
+    product integer not null,
+    cost numeric(7, 2) default 0,
+    count integer default 1 check ( count > 0 ),
+    status integer default 1 check ( status > 0 and status < 4 ),
+    id integer primary key,
+    foreign key (status) references statuses (id),
+    foreign key (product) references products (id)
+);
+
+
+create table receipts (
+    date date not null,
+    status integer default 1 check ( status > 0 and status < 4 ),
+    id serial primary key,
+    foreign key (status) references statuses (id)
+);
+
+
+create table positions_in_receipts (
+    position integer not null,
+    receipt integer not null,
+    primary key (position, receipt),
+    foreign key (position) references positions (id) on delete cascade,
+    foreign key (receipt) references receipts (id)
+);
+
+
+create table markets (
+    name text not null,
+    dates daterange not null,
+    fee integer not null default 0,
+    id serial primary key
+);
+
+
+create table receipts_on_markets (
+    receipt integer not null,
+    market integer not null,
+    primary key (market, receipt),
+    foreign key (market) references markets (id),
+    foreign key (receipt) references receipts (id) on delete cascade
+);
