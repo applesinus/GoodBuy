@@ -20,9 +20,10 @@ create table statuses (
     description text not null,
     id serial primary key
 );
-insert into statuses values ('OK');
-insert into statuses values ('Refunding');
-insert into statuses values ('Successfully refunded');
+insert into statuses values
+('OK'),
+('Refunding'),
+('Successfully refunded');
 
 
 create table positions (
@@ -68,3 +69,41 @@ create table receipts_on_markets (
     foreign key (market) references markets (id),
     foreign key (receipt) references receipts (id) on delete cascade
 );
+
+
+create table roles (
+    name text unique not null,
+    id serial primary key
+);
+insert into roles values
+('Admin'),
+('Salesman');
+
+
+create table users (
+    role_id integer not null,
+    username text not null,
+    password text not null,
+    id serial primary key,
+    foreign key (role_id) references roles (id) on delete cascade
+);
+
+
+create table permissions (
+    role_id integer,
+    table_name text,
+    permission text,
+    primary key (role_id, table_name, permission),
+    foreign key (role_id) references roles (id) on delete cascade
+);
+insert into permissions values
+(1, 'all', 'all'),
+(2, 'product_categories', 'read'),
+(2, 'products', 'read'),
+(2, 'statuses', 'read'),
+(2, 'positions', 'modify'),
+(2, 'receipts', 'modify'),
+(2, 'positions_in_receipts', 'modify'),
+(2, 'markets', 'read'),
+(2, 'roles', 'read'),
+(2, 'permissions', 'read');

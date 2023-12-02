@@ -6,3 +6,6 @@ drop table products;
 drop table statuses;
 drop table markets;
 drop table product_categories;
+drop table permissions;
+drop table users;
+drop table roles;
