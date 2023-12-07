@@ -8,6 +8,10 @@ import (
 )
 
 var conn *pgx.Conn
+var connection_err error
+
+// var psql_port = "5432/postgres"
+var psql_port = "10000/pdb"
 
 func execute_file(file_name string) {
 	commands, err := os.ReadFile(file_name)
@@ -18,9 +22,16 @@ func execute_file(file_name string) {
 	conn.Exec(context.Background(), string(commands))
 }
 
+func ConnectDB() {
+	conn, connection_err = pgx.Connect(context.Background(), "postgres://user:passw0rd@localhost:"+psql_port)
+	if connection_err != nil {
+		println("DB CONNECTION IS FAILED")
+		panic(connection_err)
+	}
+}
+
 func StartDB() {
 	var err error
-	conn, _ = pgx.Connect(context.Background(), "postgres://postgres:password@localhost:5432/postgres")
 
 	// test if the DB exist or corrupted. if this is the case for now it fully remakes (!not recover!) the DB
 	var test string
