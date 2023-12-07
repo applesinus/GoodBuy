@@ -1,12 +1,12 @@
 create table product_categories (
-    name text not null,
-    description text default '',
+    name varchar not null,
+    description varchar default '',
     id serial primary key
 );
 
 
 create table products (
-    name text not null,
+    name varchar not null,
     default_cost numeric(7, 2) not null,
     category integer not null,
     self_cost numeric(6, 2) default 0,
@@ -17,7 +17,7 @@ create table products (
 
 
 create table statuses (
-    description text not null,
+    description varchar not null,
     id serial primary key
 );
 insert into statuses values
@@ -55,7 +55,7 @@ create table positions_in_receipts (
 
 
 create table markets (
-    name text not null,
+    name varchar not null,
     dates daterange not null,
     fee integer not null default 0,
     id serial primary key
@@ -72,7 +72,7 @@ create table receipts_on_markets (
 
 
 create table roles (
-    name text unique not null,
+    name varchar unique not null,
     id serial primary key
 );
 insert into roles values
@@ -82,17 +82,18 @@ insert into roles values
 
 create table users (
     role_id integer not null,
-    username text not null,
-    password text not null,
+    username varchar unique not null,
+    password varchar not null,
     id serial primary key,
     foreign key (role_id) references roles (id) on delete cascade
 );
+insert into users values (1, 'Admin', 'Passw0rd');
 
 
 create table permissions (
     role_id integer,
-    table_name text,
-    permission text,
+    table_name varchar,
+    permission varchar,
     primary key (role_id, table_name, permission),
     foreign key (role_id) references roles (id) on delete cascade
 );

@@ -10,43 +10,65 @@ import (
 	"net/http"
 )
 
+const (
+	isRunning = iota
+	isStopped
+	isErrored
+)
+
 func main() {
 
-	db.ConnectDB()
-	println("Is this your first time of using the program on this PC?")
-	var line string
-	fmt.Scan(&line)
-	if strings.ToLower(line) == "yes" {
-		db.CreateDB()
-	} else {
-		db.StartDB()
-	}
+	db.StartDB()
 
 	go web.InitBack()
 	go web.InitFront()
 
 	var server *http.Server
-	server = &http.Server{
-		Addr: "localhost:8111",
-	}
 
-	go func() {
-		println("\nSERVER IS RUNNING!")
-		err := server.ListenAndServe()
-		if err != nil {
-			println("\nSERVER HAS BEEN STOPPED!")
+	serverStatus := isStopped
+
+	command := "start"
+	for command != "exit" {
+		switch strings.ToLower(command) {
+
+		case "start":
+			if serverStatus != isRunning {
+				server = &http.Server{
+					Addr: "localhost:8111",
+				}
+				serverIsRunning := make(chan bool)
+				go func(serverIsRunning chan bool) {
+					println("\nSERVER IS RUNNING!")
+					serverIsRunning <- true
+					err := server.ListenAndServe()
+					if err != nil {
+						println("\nTHE SERVER HAS BEEN STOPPED!")
+						println(err.Error())
+					}
+				}(serverIsRunning)
+				<-serverIsRunning
+				close(serverIsRunning)
+				serverStatus = isRunning
+			}
+
+		case "stop":
+			server.Shutdown(nil)
+			serverStatus = isStopped
+			println("SERVER CLOSING IS DONE")
+
+		case "exit":
+			println("something's wrong, main.go case 'exit' (~line 60)")
+
+		default:
+			println("UNKNOWN COMMAND")
+
 		}
-	}()
 
-	time.Sleep(3 * time.Second)
-
-	print("Enter the server command: ")
-	var command string
-	fmt.Scan(&command)
-	if strings.ToLower(command) == "stop" {
-		server.Close()
+		print("\n====================\nServer Status: ", serverStatus, "\nEnter the server command (start, stop, exit): ")
+		fmt.Scan(&command)
 	}
-	println("IT'S DONE")
 
-	time.Sleep(3 * time.Second)
+	db.DropDB()
+
+	time.Sleep(1 * time.Second)
 }

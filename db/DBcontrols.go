@@ -19,19 +19,20 @@ func execute_file(file_name string) {
 		println("NO SUCH FILE!")
 		return
 	}
-	conn.Exec(context.Background(), string(commands))
-}
-
-func ConnectDB() {
-	conn, connection_err = pgx.Connect(context.Background(), "postgres://user:passw0rd@localhost:"+psql_port)
-	if connection_err != nil {
-		println("DB CONNECTION IS FAILED")
-		panic(connection_err)
+	_, err = conn.Exec(context.Background(), string(commands))
+	if err != nil {
+		println("An error in tasked file ", file_name, ": ", err.Error())
 	}
 }
 
 func StartDB() {
 	var err error
+
+	conn, connection_err = pgx.Connect(context.Background(), "postgres://user:passw0rd@localhost:"+psql_port)
+	if connection_err != nil {
+		println("DB CONNECTION IS FAILED")
+		panic(connection_err)
+	}
 
 	// test if the DB exist or corrupted. if this is the case for now it fully remakes (!not recover!) the DB
 	var test string
@@ -47,11 +48,31 @@ func StartDB() {
 }
 
 func CreateDB() {
-	execute_file("db/CreateDB.txt")
+	execute_file("db/CreateDB.sql")
 	println("DB created")
 }
 
 func DropDB() {
-	execute_file("db/DropDB.txt")
-	println("DB created")
+	execute_file("db/DropDB.sql")
+	println("DB dropped")
+}
+
+func Auth(inputed_username, inputed_password string) bool {
+	id := -1
+	err := conn.QueryRow(context.Background(), "select id from users where username=$1", inputed_username).Scan(&id)
+	if err != nil {
+		println()
+		println(err.Error())
+		return false
+	} else {
+		password := ""
+		err := conn.QueryRow(context.Background(), "select password from users where id=$1", id).Scan(&password)
+		if (err != nil || password == "") && password != inputed_password {
+			println()
+			println(err.Error())
+			return false
+		} else {
+			return true
+		}
+	}
 }
