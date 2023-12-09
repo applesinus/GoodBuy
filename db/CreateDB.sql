@@ -1,8 +1,11 @@
 create table product_categories (
-    name varchar not null,
+    category_name varchar not null,
     description varchar default '',
     id serial primary key
 );
+insert into product_categories values
+('Аткрытка', 'аписание'),
+('Стикерпук', 'очень классный');
 
 
 create table products (
@@ -14,6 +17,13 @@ create table products (
     id serial primary key,
     foreign key (category) references product_categories (id)
 );
+insert into products values
+('Открытка', 15, 1, 5, 11),
+('Стикерпак', 20, 2, 5, 2),
+('Ого, еще открытка', 1, 1, 5, 4),
+('Новый стикерпак', 11, 2, 5, 3),
+('Плоттерная фигнюшка', 4, 1, 5, 7),
+('Серьги', 7, 1, 5, 100);
 
 
 create table statuses (

@@ -1,0 +1,32 @@
+{{define "content"}}
+<form method="post" action="">
+    <br>
+    <table padding: 10px;>
+        <tbody>
+            <tr>
+                <th>Название</th>
+                <th>Остаток на складе</th>
+                <th>Категория</th>
+                <th>Себестоимость</th>
+                <th>Цена</th>
+                <th></th>
+            </tr>
+            <tr>
+                <form>
+                    <td><input type="text" name="Name" value="Введите название"></td>
+                    <td><input type="number" step="1" name="Amount" value="0"></td>
+                    <td><select name="Category_name">
+                        {{range .categories}}
+                        <option value="{{.Id}}">{{.Name}}</option>
+                        {{end}}
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.01" name="Self_cost" value="0"></td>
+                    <td><input type="number" step="0.01" name="Default_cost" value="0"></td>
+                    <td><input type="submit" value="Добавить"></td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+</form>
+{{end}}

@@ -28,7 +28,7 @@ func main() {
 	serverStatus := isStopped
 
 	command := "start"
-	for command != "exit" {
+	for strings.ToLower(command) != "exit" {
 		switch strings.ToLower(command) {
 
 		case "start":

@@ -1,0 +1,33 @@
+{{define "content"}}
+<form method="post" action="">
+    <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+        <button value="new" name="general">Добавить новый товар</button>
+        <button value="add" name="general">Оприходовать поставку</button>
+    </div>
+    <br>
+    <table padding: 10px;>
+        <tbody>
+            <tr>
+                <th>id</th>
+                <th>Название</th>
+                <th>Остаток на складе</th>
+                <th>Категория</th>
+                <th>Себестоимость</th>
+                <th>Цена</th>
+                <th></th>
+            </tr>
+            {{range .pds}}
+            <tr>
+                <td>{{.Id}}</td>
+                <td style="font-weight: bold">{{.Name}}</td>
+                <td style="font-weight: bold">{{.Amount}}</td>
+                <td>{{.Category_name}}</td>
+                <td>{{.Self_cost}}</td>
+                <td>{{.Default_cost}}</td>
+                <td><button value="{{.Id}}" name="change">Изменить</button></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</form>
+{{end}}

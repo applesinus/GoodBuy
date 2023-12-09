@@ -30,6 +30,7 @@ func blocks(isLogged bool, user string) (string, string) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
+	var err error
 	if isLoggedIn {
 		t, _ := template.ParseFiles("web/redirect.html")
 		t.Execute(w, "/")
@@ -51,34 +52,52 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := map[string]string{
-		"title": "Login",
+		"title": "Вход",
 		"user":  currentUser,
 	}
 
 	logged_blocks, role_blocks := blocks(isLoggedIn, currentUser)
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/login.html")
-	t.Execute(w, data)
+	err = t.Execute(w, data)
+	if err != nil {
+		println(err.Error())
+	}
 }
 
-func products(w http.ResponseWriter, r *http.Request) {
+func redirect(w http.ResponseWriter, r *http.Request) {
+	var err error
+	t, _ := template.ParseFiles("web/redirect.html")
+	err = t.Execute(w, reURL)
+	if err != nil {
+		println(err.Error())
+	}
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	var err error
 	if !isLoggedIn {
 		t, _ := template.ParseFiles("web/redirect.html")
 		t.Execute(w, "/login")
 		return
 	}
-}
 
-func redirect(w http.ResponseWriter, r *http.Request) {
+	isLoggedIn = false
+	currentUser = ""
 	t, _ := template.ParseFiles("web/redirect.html")
-	t.Execute(w, reURL)
+	t.Execute(w, "/login")
+	if err != nil {
+		println(err.Error())
+	}
 }
 
 func InitFront() {
 	reURL = "/login"
 	http.HandleFunc("/", redirect)
+	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/products", products)
+	http.HandleFunc("/products/new", products_new)
 
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 }
