@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -14,7 +15,7 @@ var connection_err error
 
 type Product struct {
 	Category      int8
-	Amount        int8
+	Amount        uint16
 	Self_cost     float32
 	Default_cost  float32
 	Id            int
@@ -79,17 +80,19 @@ func Auth(inputed_username, inputed_password string) bool {
 	id := -1
 	err := conn.QueryRow(context.Background(), "select id from users where username=$1", inputed_username).Scan(&id)
 	if err != nil {
-		println()
-		println(err.Error())
+		println("Something on 83", err.Error())
 		return false
 	} else {
 		password := ""
 		err := conn.QueryRow(context.Background(), "select password from users where id=$1", id).Scan(&password)
-		if err != nil || password == "" || password != inputed_password {
-			println()
-			println(err.Error())
+		if err != nil {
+			println("Something on 89", err.Error())
 			return false
 		} else {
+			if password == "" || password != inputed_password {
+				println("wrong password:", inputed_password, "expected:", password)
+				return false
+			}
 			return true
 		}
 	}
@@ -144,7 +147,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 	rows, err := conn.Query(context.Background(), conditions)
 
 	if err != nil {
-		println(err.Error())
+		println("Something on 150", err.Error())
 		return nil
 	}
 
@@ -162,7 +165,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 			&product.Id,
 		)
 		if err != nil {
-			println(err.Error())
+			println("Something on 168", err.Error())
 			return nil
 		}
 
@@ -174,7 +177,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 		var cat_name string
 		err := conn.QueryRow(context.Background(), "select category_name from product_categories where id=$1", products[i].Category).Scan(&cat_name)
 		if err != nil {
-			println(err.Error())
+			println("Something on 180", err.Error())
 		}
 		products[i].Category_name = cat_name
 	}
@@ -224,7 +227,6 @@ func new_condition(notFirst bool, value, min, max string) string {
 	}
 
 	return new_cond.String()
-
 }
 
 func NewProduct() Product {
@@ -234,7 +236,7 @@ func NewProduct() Product {
 func GetCategories() []Category {
 	rows, err := conn.Query(context.Background(), "select * from product_categories")
 	if err != nil {
-		println(err.Error())
+		println("Something on 239", err.Error())
 		return nil
 	}
 
@@ -249,7 +251,7 @@ func GetCategories() []Category {
 			&cat.Id,
 		)
 		if err != nil {
-			println(err.Error())
+			println("Something on 254", err.Error())
 			return nil
 		}
 
@@ -258,4 +260,65 @@ func GetCategories() []Category {
 	rows.Close()
 
 	return categories
+}
+
+func GetCategotyIdByName(name string) int8 {
+	var id int8
+	err := conn.QueryRow(context.Background(), "select id from product_categories where category_name=$1", name).Scan(&id)
+	if err != nil {
+		println("Something on 269", err.Error())
+		return 0
+	}
+	return id
+}
+
+func GetCategotyNameById(id int8) string {
+	var name string
+	err := conn.QueryRow(context.Background(), "select category_name from product_categories where id=$1", id).Scan(&name)
+	if err != nil {
+		println("Something on 269", err.Error())
+		err = conn.QueryRow(context.Background(), "select category_name from product_categories where id=0").Scan(&name)
+		if err != nil {
+			return "ОШИБКА В БАЗЕ ДАННЫХ"
+		}
+	}
+	return name
+}
+
+func AddProduct(product Product) {
+	var query strings.Builder
+	var val string
+	query.Grow(len("insert into products values ('"))
+	query.WriteString("insert into products values ('")
+
+	query.Grow(len(product.Name))
+	query.WriteString(product.Name)
+	query.Grow(len("', "))
+	query.WriteString("', ")
+
+	val = fmt.Sprintf("%.2f", product.Default_cost)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", "))
+	query.WriteString(", ")
+
+	val = fmt.Sprintf("%v", product.Category)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", "))
+	query.WriteString(", ")
+
+	val = fmt.Sprintf("%.2f", product.Self_cost)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", "))
+	query.WriteString(", ")
+
+	val = fmt.Sprintf("%v", product.Amount)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(")"))
+	query.WriteString(")")
+
+	conn.Exec(context.Background(), query.String())
 }

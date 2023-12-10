@@ -80,8 +80,8 @@ account a:hover {
 }
 
 main {
-    flex-direction: column;
-    display: flex;
+    position: fixed;
+    width: 100%;
     align-items: center;
     max-width: 800px;
     margin: 80px auto 20px;

@@ -1,32 +1,37 @@
 {{define "content"}}
+<h1>Добавить новый товар</h1>
 <form method="post" action="">
     <br>
-    <table padding: 10px;>
-        <tbody>
-            <tr>
-                <th>Название</th>
-                <th>Остаток на складе</th>
-                <th>Категория</th>
-                <th>Себестоимость</th>
-                <th>Цена</th>
-                <th></th>
-            </tr>
-            <tr>
-                <form>
-                    <td><input type="text" name="Name" value="Введите название"></td>
-                    <td><input type="number" step="1" name="Amount" value="0"></td>
-                    <td><select name="Category_name">
-                        {{range .categories}}
-                        <option value="{{.Id}}">{{.Name}}</option>
-                        {{end}}
-                        </select>
-                    </td>
-                    <td><input type="number" step="0.01" name="Self_cost" value="0"></td>
-                    <td><input type="number" step="0.01" name="Default_cost" value="0"></td>
-                    <td><input type="submit" value="Добавить"></td>
-                </form>
-            </tr>
-        </tbody>
-    </table>
+    <div>
+        <table padding: 20px;>
+            <tbody>
+                <tr>
+                    <th>Название</th>
+                    <th>Остаток на складе</th>
+                    <th>Категория</th>
+                    <th>Себестоимость</th>
+                    <th>Цена</th>
+                </tr>
+                <tr>
+                        <td><input type="text" name="Name" placeholder="Введите название" value="Название"></td>
+                        <td><input type="number" step="1" name="Amount" placeholder="Не менее 0" min="0" value="0"></td>
+                        <td><select name="Category">
+                            {{range .categories}}
+                            <option value="{{.Id}}">{{.Name}}</option>
+                            {{end}}
+                            </select>
+                        </td>
+                        <td><input type="number" step="0.01" name="Self_cost" placeholder="Не менее 0" min="0" value="0"></td>
+                        <td><input type="number" step="0.01" name="Default_cost" placeholder="Не менее 0" min="0" value="0"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p style="display: flex; flex-direction: column;">
+            <input type="submit" value="Добавить">
+        </p>
+    </div>
+    <p>{{.alert}}</p>
 </form>
 {{end}}

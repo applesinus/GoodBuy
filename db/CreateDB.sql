@@ -4,16 +4,18 @@ create table product_categories (
     id serial primary key
 );
 insert into product_categories values
+('Без категории', 'Стандартная категория по умолчанию, либо в случае ошибки', 0);
+insert into product_categories values
 ('Аткрытка', 'аписание'),
 ('Стикерпук', 'очень классный');
 
 
 create table products (
     name varchar not null,
-    default_cost numeric(7, 2) not null,
+    default_cost numeric(7, 2) not null check ( default_cost >= 0 ),
     category integer not null,
-    self_cost numeric(6, 2) default 0,
-    amount integer default 0,
+    self_cost numeric(6, 2) default 0 check ( self_cost >= 0 ),
+    amount integer default 0 check ( amount >= 0 ),
     id serial primary key,
     foreign key (category) references product_categories (id)
 );
@@ -38,7 +40,7 @@ insert into statuses values
 
 create table positions (
     product integer not null,
-    cost numeric(7, 2) default 0,
+    cost numeric(7, 2) default 0 check ( cost >= 0 ),
     count integer default 1 check ( count > 0 ),
     status integer default 1 check ( status > 0 and status < 4 ),
     id integer primary key,

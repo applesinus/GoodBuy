@@ -7,8 +7,6 @@ import (
 )
 
 var reURL string
-var currentUser = ""
-var isLoggedIn = false
 
 func blocks(isLogged bool, user string) (string, string) {
 
@@ -31,7 +29,7 @@ func blocks(isLogged bool, user string) (string, string) {
 
 func login(w http.ResponseWriter, r *http.Request) {
 	var err error
-	if isLoggedIn {
+	if isLoggedIn(w, r) {
 		t, _ := template.ParseFiles("web/redirect.html")
 		t.Execute(w, "/")
 		return
@@ -43,8 +41,20 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		if db.Auth(login, password) {
 			reURL = "/products"
-			isLoggedIn = true
-			currentUser = login
+
+			cookie := &http.Cookie{
+				Name:   "currentUser",
+				Value:  login,
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+			cookie = &http.Cookie{
+				Name:   "currentPassword",
+				Value:  password,
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+
 			t, _ := template.ParseFiles("web/redirect.html")
 			t.Execute(w, "/")
 			return
@@ -53,10 +63,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	data := map[string]string{
 		"title": "Вход",
-		"user":  currentUser,
+		"user":  "",
 	}
 
-	logged_blocks, role_blocks := blocks(isLoggedIn, currentUser)
+	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), "")
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/login.html")
 	err = t.Execute(w, data)
@@ -76,19 +86,71 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 func logout(w http.ResponseWriter, r *http.Request) {
 	var err error
-	if !isLoggedIn {
+	if !isLoggedIn(w, r) {
 		t, _ := template.ParseFiles("web/redirect.html")
 		t.Execute(w, "/login")
 		return
 	}
 
-	isLoggedIn = false
-	currentUser = ""
+	cookie := &http.Cookie{
+		Name:   "currentUser",
+		Value:  "",
+		MaxAge: 0,
+	}
+	http.SetCookie(w, cookie)
+	cookie = &http.Cookie{
+		Name:   "currentPassword",
+		Value:  "",
+		MaxAge: 0,
+	}
+	http.SetCookie(w, cookie)
+
 	t, _ := template.ParseFiles("web/redirect.html")
 	t.Execute(w, "/login")
 	if err != nil {
 		println(err.Error())
 	}
+}
+
+func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	user, erruser := r.Cookie("currentUser")
+	password, errpassword := r.Cookie("currentPassword")
+
+	if erruser != nil {
+		cookie := &http.Cookie{
+			Name:   "currentUser",
+			Value:  "",
+			MaxAge: 0,
+		}
+		http.SetCookie(w, cookie)
+
+		if errpassword != nil {
+			cookie = &http.Cookie{
+				Name:   "currentPassword",
+				Value:  "",
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+		}
+		return false
+	} else {
+		if errpassword != nil {
+			cookie := &http.Cookie{
+				Name:   "currentPassword",
+				Value:  "",
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+			return false
+		}
+	}
+
+	if db.Auth(user.Value, password.Value) {
+		return true
+	} else {
+		return false
+	}
+
 }
 
 func InitFront() {
