@@ -1,5 +1,14 @@
 {{define "content"}}
-<h1>Добавить новый товар</h1>
+<div>
+    <p><h1 style="display: flex; justify-content: center;">Добавить новый товар</h1></p>
+    <p></p>
+</div>
+<div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+    <button value="new" name="general">Добавить новый товар</button>
+    <button value="add" name="general">Оприходовать поставку</button>
+</div>
+<br>
+<br>
 <form method="post" action="">
     <br>
     <div>
@@ -17,7 +26,7 @@
                         <td><input type="number" step="1" name="Amount" placeholder="Не менее 0" min="0" value="0"></td>
                         <td><select name="Category">
                             {{range .categories}}
-                            <option value="{{.Id}}">{{.Name}}</option>
+                            <option value="{{.Cat_id}}">{{.Cat_name}}</option>
                             {{end}}
                             </select>
                         </td>

@@ -31,7 +31,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if isLoggedIn(w, r) {
 		t, _ := template.ParseFiles("web/redirect.html")
-		t.Execute(w, "/")
+		t.Execute(w, "/products")
 		return
 	}
 
@@ -160,6 +160,7 @@ func InitFront() {
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/products", products)
 	http.HandleFunc("/products/new", products_new)
+	http.HandleFunc("/products/edit", products_edit)
 
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 }

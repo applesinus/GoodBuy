@@ -16,17 +16,17 @@ var connection_err error
 type Product struct {
 	Category      int8
 	Amount        uint16
+	Id            uint16
 	Self_cost     float32
 	Default_cost  float32
-	Id            int
 	Name          string
 	Category_name string
 }
 
 type Category struct {
-	Id          int8
-	Description string
-	Name        string
+	Cat_id          int8
+	Cat_description string
+	Cat_name        string
 }
 
 var psql_port = "10000/postgres"
@@ -143,6 +143,9 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 	select_contitions.Grow(len(new_cond))
 	select_contitions.WriteString(new_cond)
 
+	select_contitions.Grow(len(" order by id"))
+	select_contitions.WriteString(" order by id")
+
 	conditions := select_contitions.String()
 	rows, err := conn.Query(context.Background(), conditions)
 
@@ -183,6 +186,22 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 	}
 
 	return products
+}
+
+func GetProductByID(id int) Product {
+	prod, _ := conn.Query(context.Background(), "select * from products where id=$1", id)
+	product := NewProduct()
+	for prod.Next() {
+		prod.Scan(
+			&product.Name,
+			&product.Default_cost,
+			&product.Category,
+			&product.Self_cost,
+			&product.Amount,
+			&product.Id,
+		)
+	}
+	return product
 }
 
 func new_condition(notFirst bool, value, min, max string) string {
@@ -246,9 +265,9 @@ func GetCategories() []Category {
 		var cat Category
 
 		err = rows.Scan(
-			&cat.Name,
-			&cat.Description,
-			&cat.Id,
+			&cat.Cat_name,
+			&cat.Cat_description,
+			&cat.Cat_id,
 		)
 		if err != nil {
 			println("Something on 254", err.Error())
@@ -262,7 +281,7 @@ func GetCategories() []Category {
 	return categories
 }
 
-func GetCategotyIdByName(name string) int8 {
+func GetCategoryIdByName(name string) int8 {
 	var id int8
 	err := conn.QueryRow(context.Background(), "select id from product_categories where category_name=$1", name).Scan(&id)
 	if err != nil {
@@ -272,7 +291,7 @@ func GetCategotyIdByName(name string) int8 {
 	return id
 }
 
-func GetCategotyNameById(id int8) string {
+func GetCategoryNameById(id int8) string {
 	var name string
 	err := conn.QueryRow(context.Background(), "select category_name from product_categories where id=$1", id).Scan(&name)
 	if err != nil {
@@ -319,6 +338,50 @@ func AddProduct(product Product) {
 	query.WriteString(val)
 	query.Grow(len(")"))
 	query.WriteString(")")
+
+	println(query.String())
+
+	conn.Exec(context.Background(), query.String())
+}
+
+func EditProduct(id uint16, new_product Product) {
+	var val string
+	var query strings.Builder
+	query.Grow(len("update products set name = '"))
+	query.WriteString("update products set name = '")
+
+	query.Grow(len(new_product.Name))
+	query.WriteString(new_product.Name)
+	query.Grow(len("', default_cost = "))
+	query.WriteString("', default_cost = ")
+
+	val = fmt.Sprintf("%.2f", new_product.Default_cost)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", category = "))
+	query.WriteString(", category = ")
+
+	val = fmt.Sprintf("%v", new_product.Category)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", self_cost = "))
+	query.WriteString(", self_cost = ")
+
+	val = fmt.Sprintf("%.2f", new_product.Self_cost)
+	query.Grow(len(val))
+	query.WriteString(val)
+	query.Grow(len(", amount = "))
+	query.WriteString(", amount = ")
+
+	val = fmt.Sprintf("%v", new_product.Amount)
+	query.Grow(len(val))
+	query.WriteString(val)
+
+	query.Grow(len(" where id = "))
+	query.WriteString(" where id = ")
+	val = fmt.Sprintf("%v", id)
+	query.Grow(len(val))
+	query.WriteString(val)
 
 	conn.Exec(context.Background(), query.String())
 }

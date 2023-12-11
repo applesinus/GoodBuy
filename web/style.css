@@ -3,6 +3,9 @@ body {
     margin: 0;
     background-color: #f8f8f8;
     color: #333;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 header {
@@ -80,7 +83,9 @@ account a:hover {
 }
 
 main {
-    position: fixed;
+    flex-direction: column;
+    display: flex !important;
+    justify-content: center;
     width: 100%;
     align-items: center;
     max-width: 800px;
@@ -125,10 +130,9 @@ footer {
     padding: 10px;
     background-color: #333;
     color: #fff;
-    bottom: 0;
     flex-direction: column;
     display: flex;
     align-items: center;
     max-width: 750px;
-    margin: -20px auto 20px;
+    margin: 0 auto 0;
 }

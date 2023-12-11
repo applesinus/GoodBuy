@@ -1,0 +1,49 @@
+{{define "content"}}
+<div>
+    <p><h1 style="display: flex; justify-content: center;">Изменить товар {{.Name}}</h1></p>
+    <p>Если вам пришла поставка, нажмите "Оприходовать поставку"</p>
+</div>
+<div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+    <button value="new" name="general">Добавить новый товар</button>
+    <button value="add" name="general">Оприходовать поставку</button>
+</div>
+<br>
+<br>
+<form method="post" action="">
+    <br>
+    <div>
+        <table padding: 20px;>
+            <tbody>
+                <tr>
+                    <th>id</th>
+                    <th>Название</th>
+                    <th>Остаток на складе</th>
+                    <th>Категория</th>
+                    <th>Себестоимость</th>
+                    <th>Цена</th>
+                </tr>
+                <tr>
+                    <td><input type="number" name="Id" placeholder="{{.Id}}" value="{{.Id}}" readonly style="max-width: 30px"></td>
+                    <td><input type="text" name="Name" placeholder="Введите название" value="{{.Name}}"></td>
+                    <td><input type="number" step="1" name="Amount" placeholder="Не менее 0" min="0" value="{{.Amount}}"></td>
+                    <td>
+                        <select name="Category" value="{{.Category}}">
+                            {{range .categories}}
+                            <option value="{{.Cat_id}}" {{if eq .Cat_id $.Category}} selected="selected" {{end}}>{{.Cat_name}}</option>
+                            {{end}}
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.01" name="Self_cost" placeholder="Не менее 0" min="0" value="{{.Self_cost}}"></td>
+                    <td><input type="number" step="0.01" name="Default_cost" placeholder="Не менее 0" min="0" value="{{.Default_cost}}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p style="display: flex; flex-direction: column;">
+            <input type="submit" value="Сохранить">
+        </p>
+    </div>
+    <p>{{.alert}}</p>
+</form>
+{{end}}
