@@ -1,0 +1,46 @@
+{{define "content"}}
+<form method="post" action="">
+    <div>
+        <p><h1 style="display: flex; justify-content: center;">Чеки</h1></p>
+    </div>
+    <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+        <button value="receipt" name="general">Оформить продажу</button>
+    </div>
+    <br>
+    <br>
+    <table padding: 10px;>
+        <tbody>
+            <tr>
+                <th>id</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Позиции</th>
+                <th>Сумма</th>
+                <th></th>
+            </tr>
+            {{range .receipts}}
+            <tr>
+                <td>{{.Id}}</td>
+                <td>{{.Date}}</td>
+                <td>{{.Status}}</td>
+                <td>
+                    <table>
+                        {{range .Positions}}
+                        <tr>
+                            <td>{{.Product}}</td>
+                            <td>{{.Cost}}</td>
+                            <td>{{.Count}}</td>
+                            <td>{{.Status}}</td>
+                            <td>{{.Id}}</td>
+                        </tr>
+                        {{end}}
+                    </table>
+                </td>
+                <td>{{.Summ}}</td>
+                <td><button value="{{.Id}}" name="refund">Возврат</button></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</form>
+{{end}}

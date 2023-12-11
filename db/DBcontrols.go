@@ -29,6 +29,24 @@ type Category struct {
 	Cat_name        string
 }
 
+type Position struct {
+	// byte? uint8?
+	Status     uint8
+	Count      uint8
+	Id         uint16
+	Cost       float32
+	Product_id uint16
+}
+
+type Receipt struct {
+	// byte? uint8?
+	Status       uint8
+	Id           uint16
+	Positions_id []uint16
+	Total        uint16
+	Date         string
+}
+
 var psql_port = "10000/postgres"
 
 func execute_file(file_name string) {
@@ -338,8 +356,6 @@ func AddProduct(product Product) {
 	query.WriteString(val)
 	query.Grow(len(")"))
 	query.WriteString(")")
-
-	println(query.String())
 
 	conn.Exec(context.Background(), query.String())
 }
