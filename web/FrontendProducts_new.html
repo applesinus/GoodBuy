@@ -22,16 +22,25 @@
                     <th>Цена</th>
                 </tr>
                 <tr>
-                        <td><input type="text" name="Name" placeholder="Введите название" value="Название"></td>
-                        <td><input type="number" step="1" name="Amount" placeholder="Не менее 0" min="0" value="0"></td>
-                        <td><select name="Category">
+                    <td style="text-align: center;">
+                        <input type="text" name="Name" placeholder="Введите название" value="Название" style="max-width: 200px">
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="number" step="1" name="Amount" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                    </td>
+                    <td style="text-align: center;">
+                        <select name="Category">
                             {{range .categories}}
                             <option value="{{.Cat_id}}">{{.Cat_name}}</option>
                             {{end}}
-                            </select>
-                        </td>
-                        <td><input type="number" step="0.01" name="Self_cost" placeholder="Не менее 0" min="0" value="0"></td>
-                        <td><input type="number" step="0.01" name="Default_cost" placeholder="Не менее 0" min="0" value="0"></td>
+                        </select>
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="number" step="0.01" name="Self_cost" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="number" step="0.01" name="Default_cost" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                    </td>
                 </tr>
             </tbody>
         </table>

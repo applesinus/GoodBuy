@@ -12,16 +12,16 @@ func blocks(isLogged bool, user string) (string, string) {
 
 	var logged_blocks string
 	if isLogged {
-		logged_blocks = "user_blocks.html"
+		logged_blocks = "blocks_user.html"
 	} else {
-		logged_blocks = "notuser_blocks.html"
+		logged_blocks = "blocks_notuser.html"
 	}
 
 	var role_blocks string
 	if user == "Admin" {
-		role_blocks = "admin_blocks.html"
+		role_blocks = "blocks_admin.html"
 	} else {
-		role_blocks = "seller_blocks.html"
+		role_blocks = "blocks_seller.html"
 	}
 
 	return logged_blocks, role_blocks

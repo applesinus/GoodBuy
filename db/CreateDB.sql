@@ -12,7 +12,7 @@ insert into product_categories values
 
 create table products (
     name varchar not null unique,
-    default_cost numeric(7, 2) not null check ( default_cost >= 0 ),
+    default_cost numeric(7, 2) check ( default_cost >= 0 ),
     category integer not null,
     self_cost numeric(6, 2) default 0 check ( self_cost >= 0 ),
     amount integer default 0 check ( amount >= 0 ),

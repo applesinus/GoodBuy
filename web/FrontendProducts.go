@@ -48,7 +48,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 		"pds":   pds,
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/products.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_main.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -85,7 +85,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 		"categories": categories,
 		"alert":      "",
 	}
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/products_new.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_new.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -125,7 +125,12 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmp, _ := r.Cookie("edit")
+	tmp, err := r.Cookie("edit")
+	if err != nil {
+		t, _ := template.ParseFiles("web/redirect.html")
+		t.Execute(w, "/products")
+		return
+	}
 	var id int
 	fmt.Sscan(tmp.Value, &id)
 	product := db.GetProductByID(id)
@@ -146,7 +151,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 		"alert":        "",
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/products_edit.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_edit.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
