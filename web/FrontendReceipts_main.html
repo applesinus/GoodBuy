@@ -1,0 +1,80 @@
+{{define "content"}}
+<form method="post" action="">
+    <div>
+        <p><h1 style="display: flex; justify-content: center;">Чеки</h1></p>
+    </div>
+    <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+        <button value="receipt" name="general">Оформить продажу</button>
+    </div>
+    <br>
+    <br>
+    <style>
+        td, th {
+            padding: 3px;
+            padding-left: 7px;
+            padding-right: 7px;
+        }
+    </style>
+    <table style="border-bottom: 1px solid black; border-collapse: collapse;">
+        <tbody>
+            <tr>
+                <th style="border-bottom: 1px solid black; text-align: center;" rowspan="2">
+                    id
+                </th>
+                <th style="border-bottom: 1px solid black; text-align: center;" rowspan="2">
+                    Дата
+                </th>
+                <th style="border-bottom: 1px solid black; text-align: center;" rowspan="2">
+                    Статус
+                </th>
+                <th style="text-align: center;" colspan="5">
+                    Позиция
+                </th>
+                <th style="border-bottom: 1px solid black; text-align: center;" rowspan="2">
+                    Сумма
+                </th>
+                <th style="border-bottom: 1px solid black; text-align: center;" rowspan="2">
+                </th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>Продукт</td>
+                <td>Цена</td>
+                <td>Кол-во</td>
+                <td>Статус</td>
+            </tr>
+            {{range .receipts}}
+            <tr>
+                <td style="border-bottom: 1px solid black; text-align: center;" rowspan="{{.Pos_len}}">
+                    {{.Id}}
+                </td>
+                <td style="border-bottom: 1px solid black; text-align: center;" rowspan="{{.Pos_len}}">
+                    {{.Date}}
+                </td>
+                <td style="border-bottom: 1px solid black; text-align: center;" rowspan="{{.Pos_len}}">
+                    {{.Status}}
+                </td>
+                <td colspan="5"></td>
+                <td style="border-bottom: 1px solid black; text-align: center;" rowspan="{{.Pos_len}}">
+                    {{.Total}}
+                </td>
+                <td style="border-bottom: 1px solid black; text-align: center;" rowspan="{{.Pos_len}}">
+                    <button value="{{.Id}}" name="refund">
+                        Возврат
+                    </button>
+                </td>
+            </tr>
+            {{range .Positions}}
+            <tr>
+                <td style="border-bottom: 1px solid black;">{{.Id}}</td>
+                <td style="border-bottom: 1px solid black;">{{.Product}}</td>
+                <td style="border-bottom: 1px solid black;">{{.Cost}}</td>
+                <td style="border-bottom: 1px solid black;">{{.Count}}</td>
+                <td style="border-bottom: 1px solid black;">{{.Status}}</td>
+            </tr>
+            {{end}}
+            {{end}}
+        </tbody>
+    </table>
+</form>
+{{end}}

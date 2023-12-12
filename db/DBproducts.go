@@ -23,6 +23,10 @@ type Category struct {
 	Cat_name        string
 }
 
+func NewProduct() Product {
+	return Product{0, 0, 0, 0, 0, "0", ""}
+}
+
 func GetProducts(min_threshold, max_threshold Product) []Product {
 	var select_contitions strings.Builder
 	select_contitions.Grow(len("select * from products"))
@@ -171,10 +175,6 @@ func new_condition(notFirst bool, value, min, max string) string {
 	}
 
 	return new_cond.String()
-}
-
-func NewProduct() Product {
-	return Product{0, 0, 0, 0, 0, "0", ""}
 }
 
 func GetCategories() []Category {
