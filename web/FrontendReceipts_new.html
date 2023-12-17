@@ -1,0 +1,95 @@
+{{define "content"}}
+<link href="/web/select2/select2.min.css" rel="stylesheet" />
+<script src="/web/select2/jquery-3.4.1.js"></script>
+<script src="/web/select2/select2.full.min.js"></script>
+
+
+
+<div>
+    <p><h1 style="display: flex; justify-content: center;">Оформить новую продажу</h1></p>
+</div>
+<br>
+<br>
+<style>
+    td, th {
+        padding: 3px;
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    .one_line {
+        border-bottom: 1px solid black;
+        text-align: center;
+    }
+    .underline {
+        border-bottom: 1px solid black;
+        text-align: center;
+    }
+</style>
+<table id="receipt" style="border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <th class="underline" rowspan="2">
+                Дата
+            </th>
+            <th style="text-align: center;" colspan="4">
+                Позиция
+            </th>
+            <th class="underline" rowspan="2">
+                Сумма
+            </th>
+        </tr>
+        <tr>
+            <td class="underline">Продукт</td>
+            <td class="underline">Цена</td>
+            <td class="underline">Кол-во</td>
+        </tr>
+        <tr>
+            <td rowspan="2" class="one_line">
+                Date
+            </td>
+            <td colspan="4" style="padding: 0;"></td>
+            <td rowspan="2" class="one_line">
+                Total
+            </td>
+        </tr>
+        <tr>
+            <form method="post" action="">
+                <td class="underline">
+                    <select id="products_select" style="width: 300px;">
+                        {{range .pds}}
+                            <option value="{{.Id}}">{{.Name}}</option>
+                        {{end}}
+                    </select>
+                    <script>
+                        $(document).ready(function() {
+                            $('#products_select').select2();
+                        });
+                    </script>                                            
+                </td>
+                <td class="underline">Cost</td>
+                <td class="underline">Count</td>
+            </form>
+        </tr>
+    </tbody>
+</table>
+<br>
+<div style="text-align: center;">
+    <button type="button" onclick="addRow()">Добавить позицию</button>
+</div>
+
+<script>
+    function addRow() {
+        var table = document.getElementById("receipt");
+        var rowCount = table.rows.length;
+        var newRow = table.insertRow(rowCount);
+        var cell1 = newRow.insertCell(0);
+        var cell2 = newRow.insertCell(1);
+
+        var cells = document.getElementsByClassName("one_line");
+        for (var i = 0; i < cells.length; i++) {
+            var rowCount = cells[i].rowSpan;
+            cells[i].rowSpan = rowCount + 1;
+        }
+    }
+</script>
+{{end}}

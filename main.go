@@ -64,7 +64,7 @@ func main() {
 
 		}
 
-		print("\n====================\nServer Status: ", serverStatus, "\nEnter the server command (start, stop, exit): ")
+		println("\n====================\nServer Status: ", serverStatus, "\nEnter the server command (start, stop, exit).")
 		fmt.Scan(&command)
 	}
 

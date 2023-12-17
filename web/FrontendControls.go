@@ -162,6 +162,7 @@ func InitFront() {
 	http.HandleFunc("/products/new", products_new)
 	http.HandleFunc("/products/edit", products_edit)
 	http.HandleFunc("/receipts", receipts)
+	http.HandleFunc("/receipts/new", reciepts_new)
 
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 }

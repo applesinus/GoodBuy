@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table</title>
+</head>
+<body>
+    <h1>Dynamic Table</h1>
+    <table id="dataTable" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <!-- Добавьте другие заголовки столбцов здесь, если необходимо -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Начальные строки таблицы, если они уже существуют -->
+            <tr>
+                <td>1</td>
+                <td>Item 1</td>
+                <!-- Добавьте другие ячейки данных здесь, если необходимо -->
+            </tr>
+        </tbody>
+    </table>
+
+    <button onclick="addRow()">Add Row</button>
+
+    <script>
+        function addRow() {
+            var cells = document.getElementsByClassName("shared-behavior");
+
+            // Пройдем по всем элементам коллекции
+            for (var i = 0; i < cells.length; i++) {
+                var rowCount = cells[i].rowSpan;
+
+                // Увеличиваем rowspan для каждой ячейки
+                cells[i].rowSpan = rowCount + 1;
+            }
+
+            var table = document.getElementById("dataTable");
+            var newRow = table.insertRow(rowCount);
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+
+            cell1.innerHTML = rowCount + 1; // Увеличиваем ID на 1 при добавлении новой строки
+            cell2.innerHTML = "Item " + (rowCount + 1); // Пример данных для других столбцов
+
+            // Добавьте другие ячейки данных здесь, если необходимо
+        }
+
+    </script>
+</body>
+</html>

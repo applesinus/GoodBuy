@@ -4,7 +4,7 @@
         <p><h1 style="display: flex; justify-content: center;">Чеки</h1></p>
     </div>
     <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
-        <button value="receipt" name="general">Оформить продажу</button>
+        <button value="new_receipt" name="general">Оформить продажу</button>
     </div>
     <br>
     <br>
@@ -37,11 +37,11 @@
                 </th>
             </tr>
             <tr>
-                <td>id</td>
-                <td>Продукт</td>
-                <td>Цена</td>
-                <td>Кол-во</td>
-                <td>Статус</td>
+                <td style="border-bottom: 1px solid black;">id</td>
+                <td style="border-bottom: 1px solid black;">Продукт</td>
+                <td style="border-bottom: 1px solid black;">Цена</td>
+                <td style="border-bottom: 1px solid black;">Кол-во</td>
+                <td style="border-bottom: 1px solid black;">Статус</td>
             </tr>
             {{range .receipts}}
             <tr>
