@@ -1,11 +1,17 @@
 package web
 
 import (
-	//"GoodBuy/db"
 	"GoodBuy/db"
 	"html/template"
 	"net/http"
+	"time"
 )
+
+type date_str struct {
+	Y int
+	M time.Month
+	D int
+}
 
 func receipts(w http.ResponseWriter, r *http.Request) {
 	var err error
@@ -56,10 +62,13 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 
 	pd := db.NewProduct()
 	pds := db.GetProducts(pd, pd)
+	var date date_str
+	date.Y, date.M, date.D = time.Now().Date()
 
 	data := map[string]interface{}{
 		"title": "Продукты",
 		"user":  currentUser,
+		"Date":  date,
 		"pds":   pds,
 	}
 

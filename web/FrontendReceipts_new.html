@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td rowspan="2" class="one_line">
-                Date
+                    {{.Date.Y}}-{{.Date.M}}-{{.Date.D}}
             </td>
             <td colspan="4" style="padding: 0;"></td>
             <td rowspan="2" class="one_line">
@@ -55,25 +55,28 @@
         <tr>
             <form method="post" action="">
                 <td class="underline">
-                    <select id="products_select" style="width: 300px;">
+                    <select id="product" style="width: 300px;">
                         {{range .pds}}
                             <option value="{{.Id}}">{{.Name}}</option>
                         {{end}}
                     </select>
                     <script>
                         $(document).ready(function() {
-                            $('#products_select').select2();
+                            $('#product').select2();
                         });
                     </script>                                            
                 </td>
-                <td class="underline">Cost</td>
-                <td class="underline">Count</td>
+                <td class="underline">
+                    <input type="number" step="0.01" name="cost" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                </td>
+                <td class="underline">
+                    <input type="number" step="1" name="count" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                </td>
             </form>
         </tr>
     </tbody>
 </table>
-<br>
-<div style="text-align: center;">
+<div style="text-align: center; padding: 20px;">
     <button type="button" onclick="addRow()">Добавить позицию</button>
 </div>
 
