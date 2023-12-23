@@ -120,3 +120,6 @@ insert into permissions values
 (2, 'markets', 'read'),
 (2, 'roles', 'read'),
 (2, 'permissions', 'read');
+
+insert into users values (2, 'user', 'pass');
+select * from users;

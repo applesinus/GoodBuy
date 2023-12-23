@@ -75,6 +75,55 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func register(w http.ResponseWriter, r *http.Request) {
+	var err error
+	if isLoggedIn(w, r) {
+		t, _ := template.ParseFiles("web/redirect.html")
+		t.Execute(w, "/products")
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		login := r.PostFormValue("login")
+		password := r.PostFormValue("password")
+
+		if !db.Auth(login, password) {
+			reURL = "/products"
+
+			cookie := &http.Cookie{
+				Name:   "currentUser",
+				Value:  login,
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+			cookie = &http.Cookie{
+				Name:   "currentPassword",
+				Value:  password,
+				MaxAge: 0,
+			}
+			http.SetCookie(w, cookie)
+
+			db.RegisterUser(login, password)
+
+			t, _ := template.ParseFiles("web/redirect.html")
+			t.Execute(w, "/")
+			return
+		}
+	}
+
+	data := map[string]string{
+		"title": "Регистрация",
+	}
+
+	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), "")
+
+	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/register.html")
+	err = t.Execute(w, data)
+	if err != nil {
+		println(err.Error())
+	}
+}
+
 func redirect(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t, _ := template.ParseFiles("web/redirect.html")
@@ -156,11 +205,15 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 func InitFront() {
 	reURL = "/login"
 	http.HandleFunc("/", redirect)
+
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/register", register)
+
 	http.HandleFunc("/products", products)
 	http.HandleFunc("/products/new", products_new)
 	http.HandleFunc("/products/edit", products_edit)
+
 	http.HandleFunc("/receipts", receipts)
 	http.HandleFunc("/receipts/new", reciepts_new)
 

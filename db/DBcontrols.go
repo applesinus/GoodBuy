@@ -21,7 +21,7 @@ func execute_file(file_name string) {
 
 	_, err = conn.Exec(context.Background(), string(commands))
 	if err != nil {
-		println("An error in tasked file ", file_name, ": ", err.Error())
+		println("An error in file ", file_name, ": ", err.Error())
 	}
 }
 
@@ -76,5 +76,12 @@ func Auth(inputed_username, inputed_password string) bool {
 			}
 			return true
 		}
+	}
+}
+
+func RegisterUser(username, password string) {
+	_, err := conn.Exec(context.Background(), "insert into users values (2, $1, $2);", username, password)
+	if err != nil {
+		println(err.Error())
 	}
 }
