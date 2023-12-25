@@ -78,19 +78,3 @@ func Auth(inputed_username, inputed_password string) bool {
 		}
 	}
 }
-
-func RegisterUser(username, password string) {
-	_, err := conn.Exec(context.Background(), "insert into users values (2, $1, $2);", username, password)
-	if err != nil {
-		println(err.Error())
-	}
-}
-
-func GetRoleOfUser(username string) string {
-	role := "error"
-	err := conn.QueryRow(context.Background(), "select name from roles where id = (select role_id from users where username=$1)", username).Scan(&role)
-	if err != nil {
-		println(err.Error())
-	}
-	return role
-}

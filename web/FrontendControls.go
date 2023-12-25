@@ -214,5 +214,7 @@ func InitFront() {
 	http.HandleFunc("/receipts", receipts)
 	http.HandleFunc("/receipts/new", reciepts_new)
 
+	http.HandleFunc("/admin", admin)
+
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 }

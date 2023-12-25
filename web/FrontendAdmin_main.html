@@ -1,0 +1,50 @@
+{{define "content"}}
+<style>
+    td, th {
+        padding: 5px;
+        padding-left: 7px;
+        padding-right: 7px;
+        border-bottom: 1px solid gainsboro;
+        text-align: center;
+    }
+</style>
+
+    <div>
+        <p><h1 style="display: flex; justify-content: center;">Панель администратора</h1></p>
+    </div>
+    <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+        <button value="new" name="general" onclick="window.location.href='#users'">Пользователи</button>
+    </div>
+    <br>
+    <br>
+    <div name="users">
+        <form method="post" action="">
+            <h2 style="text-align: center;">Пользователи</h2>
+            <table style="border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <th>id</th>
+                        <th>Имя</th>
+                        <th>Роль</th>
+                        <th></th>
+                    </tr>
+                    {{range $users := .users}}
+                    <tr>
+                        <td>{{$users.Id}}</td>
+                        <td style="font-weight: bold">{{$users.Name}}</td>
+                        <td>
+                            <select name="role{{.Id}}">
+                                {{range $roles := $.roles}}
+                                <option value="{{$roles.Id}}" {{if eq $roles.Name $users.Role}} selected="selected" {{end}}>{{$roles.Name}}</option>
+                                {{end}}
+                            </select>
+                        </td>
+                        <td><button value="{{.Id}}" name="change">Обновить</button></td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </form>
+    </div>
+</form>
+{{end}}
