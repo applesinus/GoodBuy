@@ -8,23 +8,21 @@ import (
 
 var reURL string
 
-func blocks(isLogged bool, user string) (string, string) {
-
-	var logged_blocks string
-	if isLogged {
-		logged_blocks = "blocks_user.html"
-	} else {
-		logged_blocks = "blocks_notuser.html"
-	}
+func blocks(user string) string {
 
 	var role_blocks string
-	if user == "Admin" {
+	switch db.GetRoleOfUser(user) {
+	case "Admin":
 		role_blocks = "blocks_admin.html"
-	} else {
+	case "Salesman":
 		role_blocks = "blocks_seller.html"
+	case "Analyst":
+		role_blocks = "blocks_analyst.html"
+	case "error":
+		role_blocks = "blocks_notuser.html"
 	}
 
-	return logged_blocks, role_blocks
+	return role_blocks
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -66,9 +64,9 @@ func login(w http.ResponseWriter, r *http.Request) {
 		"user":  "",
 	}
 
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), "")
+	role_blocks := blocks("")
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/login.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/login.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -115,9 +113,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 		"title": "Регистрация",
 	}
 
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), "")
+	role_blocks := blocks("")
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/register.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/register.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -199,7 +197,6 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 	} else {
 		return false
 	}
-
 }
 
 func InitFront() {

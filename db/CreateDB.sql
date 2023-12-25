@@ -88,8 +88,11 @@ create table roles (
     id serial primary key
 );
 insert into roles values
+('Unknown', 0);
+insert into roles values
 ('Admin'),
-('Salesman');
+('Salesman'),
+('Analyst');
 
 
 create table users (
@@ -99,7 +102,9 @@ create table users (
     id serial primary key,
     foreign key (role_id) references roles (id) on delete cascade
 );
-insert into users values (1, 'Admin', 'Passw0rd');
+insert into users values (1, 'Administrator', '123');
+insert into users values (2, 'Seller', '123');
+insert into users values (3, 'Analytic', '123');
 
 
 create table permissions (
@@ -120,6 +125,3 @@ insert into permissions values
 (2, 'markets', 'read'),
 (2, 'roles', 'read'),
 (2, 'permissions', 'read');
-
-insert into users values (2, 'user', 'pass');
-select * from users;

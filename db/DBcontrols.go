@@ -85,3 +85,12 @@ func RegisterUser(username, password string) {
 		println(err.Error())
 	}
 }
+
+func GetRoleOfUser(username string) string {
+	role := "error"
+	err := conn.QueryRow(context.Background(), "select name from roles where id = (select role_id from users where username=$1)", username).Scan(&role)
+	if err != nil {
+		println(err.Error())
+	}
+	return role
+}

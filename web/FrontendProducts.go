@@ -17,6 +17,23 @@ func products(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
+	currentRole := db.GetRoleOfUser(currentUser)
+	if currentRole != "Admin" && currentRole != "Salesman" {
+		role_blocks := blocks(currentUser)
+
+		data := map[string]interface{}{
+			"title": "Продукты",
+			"user":  currentUser,
+		}
+
+		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
+		err = t.Execute(w, data)
+		if err != nil {
+			println(err.Error())
+		}
+		return
+	}
+
 	if r.Method == http.MethodPost {
 		if r.PostFormValue("general") == "new" {
 			t, _ := template.ParseFiles("web/redirect.html")
@@ -37,7 +54,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), currentUser)
+	role_blocks := blocks(currentUser)
 
 	pd := db.NewProduct()
 	pds := db.GetProducts(pd, pd)
@@ -48,7 +65,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 		"pds":   pds,
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_main.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_main.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -65,6 +82,23 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
+	currentRole := db.GetRoleOfUser(currentUser)
+	if currentRole != "Admin" && currentRole != "Salesman" {
+		role_blocks := blocks(currentUser)
+
+		data := map[string]interface{}{
+			"title": "Продукты",
+			"user":  currentUser,
+		}
+
+		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
+		err = t.Execute(w, data)
+		if err != nil {
+			println(err.Error())
+		}
+		return
+	}
+
 	if r.Method == http.MethodPost {
 		new_product := db.NewProduct()
 		new_product.Name = r.PostFormValue("Name")
@@ -77,7 +111,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	}
 
 	categories := db.GetCategories()
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), currentUser)
+	role_blocks := blocks(currentUser)
 
 	data := map[string]interface{}{
 		"title":      "Добавить новый продукт",
@@ -85,7 +119,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 		"categories": categories,
 		"alert":      "",
 	}
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_new.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_new.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -101,6 +135,23 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	}
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
+
+	currentRole := db.GetRoleOfUser(currentUser)
+	if currentRole != "Admin" && currentRole != "Salesman" {
+		role_blocks := blocks(currentUser)
+
+		data := map[string]interface{}{
+			"title": "Продукты",
+			"user":  currentUser,
+		}
+
+		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
+		err = t.Execute(w, data)
+		if err != nil {
+			println(err.Error())
+		}
+		return
+	}
 
 	if r.Method == http.MethodPost {
 		new_product := db.NewProduct()
@@ -136,7 +187,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	product := db.GetProductByID(id)
 
 	categories := db.GetCategories()
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), currentUser)
+	role_blocks := blocks(currentUser)
 
 	data := map[string]interface{}{
 		"title":        "Добавить новый продукт",
@@ -151,7 +202,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 		"alert":        "",
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendProducts_edit.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_edit.html")
 	err = t.Execute(w, data)
 	if err != nil {
 		println(err.Error())

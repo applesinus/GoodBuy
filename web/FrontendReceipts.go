@@ -22,7 +22,25 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	}
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), currentUser)
+
+	currentRole := db.GetRoleOfUser(currentUser)
+	if currentRole != "Admin" && currentRole != "Salesman" {
+		role_blocks := blocks(currentUser)
+
+		data := map[string]interface{}{
+			"title": "Продукты",
+			"user":  currentUser,
+		}
+
+		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
+		err = t.Execute(w, data)
+		if err != nil {
+			println(err.Error())
+		}
+		return
+	}
+
+	role_blocks := blocks(currentUser)
 
 	if r.Method == http.MethodPost {
 		if r.PostFormValue("general") == "new_receipt" {
@@ -42,7 +60,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 		"receipts": []db.Receipt{rec1, rec2},
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendReceipts_main.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_main.html")
 	t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -58,7 +76,25 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 	}
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
-	logged_blocks, role_blocks := blocks(isLoggedIn(w, r), currentUser)
+
+	currentRole := db.GetRoleOfUser(currentUser)
+	if currentRole != "Admin" && currentRole != "Salesman" {
+		role_blocks := blocks(currentUser)
+
+		data := map[string]interface{}{
+			"title": "Продукты",
+			"user":  currentUser,
+		}
+
+		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
+		err = t.Execute(w, data)
+		if err != nil {
+			println(err.Error())
+		}
+		return
+	}
+
+	role_blocks := blocks(currentUser)
 
 	pd := db.NewProduct()
 	pds := db.GetProducts(pd, pd)
@@ -72,7 +108,7 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 		"pds":   pds,
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+logged_blocks, "web/"+role_blocks, "web/FrontendReceipts_new.html")
+	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_new.html")
 	t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
