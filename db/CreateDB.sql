@@ -102,9 +102,9 @@ create table users (
     id serial primary key,
     foreign key (role_id) references roles (id) on delete cascade
 );
-insert into users values (1, 'Administrator', '123');
-insert into users values (2, 'Seller', '123');
-insert into users values (3, 'Analytic', '123');
+insert into users values (1, 'Administrator', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
+insert into users values (2, 'Seller', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
+insert into users values (3, 'Analytic', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
 
 
 create table permissions (

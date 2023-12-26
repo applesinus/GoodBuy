@@ -4,10 +4,9 @@ import (
 	"GoodBuy/db"
 	"GoodBuy/web"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
-
-	"net/http"
 )
 
 const (

@@ -61,17 +61,14 @@ func Auth(inputed_username, inputed_password string) bool {
 	id := -1
 	err := conn.QueryRow(context.Background(), "select id from users where username=$1", inputed_username).Scan(&id)
 	if err != nil {
-		println("Something on 83", err.Error())
 		return false
 	} else {
 		password := ""
 		err := conn.QueryRow(context.Background(), "select password from users where id=$1", id).Scan(&password)
 		if err != nil {
-			println("Something on 89", err.Error())
 			return false
 		} else {
-			if password == "" || password != inputed_password {
-				println("wrong password:", inputed_password, "expected:", password)
+			if password == "" || inputed_password != password {
 				return false
 			}
 			return true
