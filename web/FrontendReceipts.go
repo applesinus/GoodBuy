@@ -50,14 +50,12 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//TODO
-	rec1 := db.NewReceipt()
-	rec2 := db.NewReceipt()
+	rcps := db.GetAllReceipts()
 
 	data := map[string]interface{}{
 		"title":    "Продукты",
 		"user":     currentUser,
-		"receipts": []db.Receipt{rec1, rec2},
+		"receipts": rcps,
 	}
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_main.html")

@@ -2,6 +2,7 @@ package web
 
 import (
 	"GoodBuy/db"
+	"GoodBuy/security"
 	"html/template"
 	"net/http"
 )
@@ -37,7 +38,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		login := r.PostFormValue("login")
 		password := r.PostFormValue("password")
 
-		if db.Auth(login, password) {
+		if db.Auth(login, security.Hash(password)) {
 			reURL = "/products"
 
 			cookie := &http.Cookie{
@@ -48,7 +49,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, cookie)
 			cookie = &http.Cookie{
 				Name:   "currentPassword",
-				Value:  password,
+				Value:  security.Hash(password),
 				MaxAge: 0,
 			}
 			http.SetCookie(w, cookie)
@@ -96,12 +97,12 @@ func register(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, cookie)
 			cookie = &http.Cookie{
 				Name:   "currentPassword",
-				Value:  password,
+				Value:  security.Hash(password),
 				MaxAge: 0,
 			}
 			http.SetCookie(w, cookie)
 
-			db.RegisterUser(login, password)
+			db.RegisterUser(login, security.Hash(password))
 
 			t, _ := template.ParseFiles("web/redirect.html")
 			t.Execute(w, "/")
@@ -215,6 +216,8 @@ func InitFront() {
 	http.HandleFunc("/receipts/new", reciepts_new)
 
 	http.HandleFunc("/admin", admin)
+
+	http.HandleFunc("/stats", stats)
 
 	http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 }

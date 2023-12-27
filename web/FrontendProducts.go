@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 func products(w http.ResponseWriter, r *http.Request) {
@@ -41,15 +43,8 @@ func products(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if r.PostFormValue("change") != "" {
-			cookie := &http.Cookie{
-				Name:   "edit",
-				Value:  r.PostFormValue("change"),
-				MaxAge: 600,
-			}
-			http.SetCookie(w, cookie)
-
 			t, _ := template.ParseFiles("web/redirect.html")
-			t.Execute(w, "/products/edit")
+			t.Execute(w, "/products/edit?id="+r.PostFormValue("change"))
 			return
 		}
 	}
@@ -165,25 +160,21 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 
 		db.EditProduct(new_product.Id, new_product)
 
-		cookie := &http.Cookie{
-			Name:   "edit",
-			MaxAge: -1,
-		}
-		http.SetCookie(w, cookie)
-
 		t, _ := template.ParseFiles("web/redirect.html")
 		t.Execute(w, "/products")
 		return
 	}
 
-	tmp, err := r.Cookie("edit")
+	queryParams, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
-		t, _ := template.ParseFiles("web/redirect.html")
-		t.Execute(w, "/products")
+		println("Error parsing edit product id parameter from address.", err.Error())
 		return
 	}
-	var id int
-	fmt.Sscan(tmp.Value, &id)
+	id, err := strconv.Atoi(queryParams.Get("id"))
+	if err != nil {
+		println("Error parsing edit product id parameter to int.", err.Error())
+		return
+	}
 	product := db.GetProductByID(id)
 
 	categories := db.GetCategories()
