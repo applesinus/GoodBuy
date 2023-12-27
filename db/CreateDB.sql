@@ -43,10 +43,14 @@ create table positions (
     cost numeric(7, 2) default 0 check ( cost >= 0 ),
     count integer default 1 check ( count > 0 ),
     status integer default 1 check ( status > 0 and status < 4 ),
-    id integer primary key,
+    id serial primary key,
     foreign key (status) references statuses (id),
     foreign key (product) references products (id)
 );
+insert into positions values
+(1, 15, 2, 1),
+(2, 20, 1, 1),
+(6, 7, 2, 1);
 
 
 create table receipts (
@@ -55,6 +59,9 @@ create table receipts (
     id serial primary key,
     foreign key (status) references statuses (id)
 );
+insert into receipts values
+(date '2027-12-27', 1),
+(date '2027-12-27', 1);
 
 
 create table positions_in_receipts (
@@ -64,6 +71,10 @@ create table positions_in_receipts (
     foreign key (position) references positions (id) on delete cascade,
     foreign key (receipt) references receipts (id)
 );
+insert into positions_in_receipts values
+(1, 1),
+(2, 1),
+(3, 2);
 
 
 create table markets (
