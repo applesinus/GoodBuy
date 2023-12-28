@@ -36,10 +36,9 @@ func admin(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		if r.PostFormValue("change") != "" {
-			id, _ := strconv.Atoi(r.PostFormValue("role" + r.PostFormValue("change")))
-			db.GrantRoleToUser(db.GetUsernameById(uint8(id)), r.PostFormValue("role"))
-
-			return
+			role, _ := strconv.Atoi(r.PostFormValue("role" + r.PostFormValue("change")))
+			user, _ := strconv.Atoi(r.PostFormValue("change"))
+			db.GrantRoleToUser(db.GetUsernameById(uint8(user)), role)
 		}
 	}
 

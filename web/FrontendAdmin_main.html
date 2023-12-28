@@ -30,7 +30,10 @@
                     </tr>
                     {{range $users := .users}}
                     <tr>
-                        <td>{{$users.Id}}</td>
+                        <td>
+                            <input type="number" name="id{{$users.Id}}" value="{{$users.Id}}" readonly
+                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        </td>
                         <td style="font-weight: bold">{{$users.Name}}</td>
                         <td>
                             <select name="role{{.Id}}">

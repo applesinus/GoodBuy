@@ -123,16 +123,15 @@ func GetIdOfRole(role string) uint8 {
 
 	err := conn.QueryRow(context.Background(), "select id from roles where name=$1", role).Scan(&id)
 	if err != nil {
-		println("Something on 88", err.Error())
+		println("Something on 126", err.Error())
 		return 0
 	}
 
 	return id
 }
 
-func GrantRoleToUser(user, role string) {
-	id := GetIdOfRole(role)
-	_, err := conn.Exec(context.Background(), "update users set role_id=$1 where username=$2", id, user)
+func GrantRoleToUser(user string, role_id int) {
+	_, err := conn.Exec(context.Background(), "update users set role_id=$1 where username=$2", role_id, user)
 	if err != nil {
 		println("Failed to grant the role.", err.Error())
 	}

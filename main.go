@@ -69,5 +69,5 @@ func main() {
 
 	db.DropDB()
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(1 * time.Second)
 }
