@@ -26,7 +26,7 @@ func GetUsers() []User {
 	tmp_users := make([]temp_user, 0)
 	all_users := make([]User, 0)
 
-	rows, err := conn.Query(context.Background(), "select * from users")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.users")
 	if err != nil {
 		println(err.Error())
 		return all_users
@@ -62,7 +62,7 @@ func NewUser() User {
 }
 
 func RegisterUser(username, password string) {
-	_, err := conn.Exec(context.Background(), "insert into users values (2, $1, $2);", username, password)
+	_, err := conn.Exec(context.Background(), "insert into goodbuy.users values (2, $1, $2);", username, password)
 	if err != nil {
 		println(err.Error())
 	}
@@ -71,7 +71,7 @@ func RegisterUser(username, password string) {
 func GetUsernameById(id uint8) string {
 	var name string
 
-	err := conn.QueryRow(context.Background(), "select username from users where id=$1", id).Scan(&name)
+	err := conn.QueryRow(context.Background(), "select username from goodbuy.users where id=$1", id).Scan(&name)
 	if err != nil {
 		println("Something on 67", err.Error())
 		return "Unknown"
@@ -83,7 +83,7 @@ func GetUsernameById(id uint8) string {
 func GetRoles() []Role {
 	roles := make([]Role, 0)
 
-	rows, err := conn.Query(context.Background(), "select * from roles")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.roles")
 	if err != nil {
 		println("Something on 87.", err.Error())
 	}
@@ -99,7 +99,7 @@ func GetRoles() []Role {
 
 func GetRoleOfUser(username string) string {
 	role := "error"
-	err := conn.QueryRow(context.Background(), "select name from roles where id = (select role_id from users where username=$1)", username).Scan(&role)
+	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id = (select role_id from goodbuy.users where username=$1)", username).Scan(&role)
 	if err != nil {
 		println(err.Error())
 	}
@@ -109,7 +109,7 @@ func GetRoleOfUser(username string) string {
 func GetRoleById(id uint8) string {
 	var role string
 
-	err := conn.QueryRow(context.Background(), "select name from roles where id=$1", id).Scan(&role)
+	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id=$1", id).Scan(&role)
 	if err != nil {
 		println("Something on 76", err.Error())
 		return "Unknown"
@@ -121,7 +121,7 @@ func GetRoleById(id uint8) string {
 func GetIdOfRole(role string) uint8 {
 	var id uint8
 
-	err := conn.QueryRow(context.Background(), "select id from roles where name=$1", role).Scan(&id)
+	err := conn.QueryRow(context.Background(), "select id from goodbuy.roles where name=$1", role).Scan(&id)
 	if err != nil {
 		println("Something on 126", err.Error())
 		return 0
@@ -131,7 +131,7 @@ func GetIdOfRole(role string) uint8 {
 }
 
 func GrantRoleToUser(user string, role_id int) {
-	_, err := conn.Exec(context.Background(), "update users set role_id=$1 where username=$2", role_id, user)
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set role_id=$1 where username=$2", role_id, user)
 	if err != nil {
 		println("Failed to grant the role.", err.Error())
 	}

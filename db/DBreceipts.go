@@ -32,11 +32,12 @@ func NewReceipt() Receipt {
 	return Receipt{0, 0, 0, pos_len, pos, "1999-01-01"}
 }
 
+// TODO refactor NOW
 func GetAllReceipts() map[int]Receipt {
 
 	// getting all receipts
 	receipts := make(map[int]Receipt)
-	rows, err := conn.Query(context.Background(), "select * from receipts")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.receipts")
 	if err != nil {
 		println("err on getting receipts", err.Error())
 	}
@@ -59,7 +60,7 @@ func GetAllReceipts() map[int]Receipt {
 
 	// getting all positions
 	positions := make(map[int]Position)
-	rows, err = conn.Query(context.Background(), "select * from positions")
+	rows, err = conn.Query(context.Background(), "select * from goodbuy.positions")
 	if err != nil {
 		println("err on getting positions", err.Error())
 	}
@@ -83,7 +84,7 @@ func GetAllReceipts() map[int]Receipt {
 	rows.Close()
 
 	// adding positions to receipts
-	rows, err = conn.Query(context.Background(), "select * from positions_in_receipts")
+	rows, err = conn.Query(context.Background(), "select * from goodbuy.positions_in_receipts")
 	if err != nil {
 		println("err on getting pos_in_rec", err.Error())
 	}

@@ -59,12 +59,12 @@ func DropDB() {
 
 func Auth(inputed_username, inputed_password string) bool {
 	id := -1
-	err := conn.QueryRow(context.Background(), "select id from users where username=$1", inputed_username).Scan(&id)
+	err := conn.QueryRow(context.Background(), "select id from goodbuy.users where username=$1", inputed_username).Scan(&id)
 	if err != nil {
 		return false
 	} else {
 		password := ""
-		err := conn.QueryRow(context.Background(), "select password from users where id=$1", id).Scan(&password)
+		err := conn.QueryRow(context.Background(), "select password from goodbuy.users where id=$1", id).Scan(&password)
 		if err != nil {
 			return false
 		} else {

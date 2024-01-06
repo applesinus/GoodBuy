@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -27,14 +26,15 @@ func NewProduct() Product {
 	return Product{0, 0, 0, 0, 0, "0", ""}
 }
 
+// TODO refactor NOW
 func GetProducts(min_threshold, max_threshold Product) []Product {
 	var select_contitions strings.Builder
-	select_contitions.Grow(len("select * from products"))
-	select_contitions.WriteString("select * from products")
+	select_contitions.Grow(len("select * from goodbuy.products"))
+	select_contitions.WriteString("select * from goodbuy.products")
 
 	// Category trashold
 	new_cond := new_condition(
-		select_contitions.Len() != len("select * from products"),
+		select_contitions.Len() != len("select * from goodbuy.products"),
 		"category",
 		strconv.Itoa(int(min_threshold.Category)),
 		strconv.Itoa(int(max_threshold.Category)),
@@ -44,7 +44,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 
 	// Amount trashold
 	new_cond = new_condition(
-		select_contitions.Len() != len("select * from products"),
+		select_contitions.Len() != len("select * from goodbuy.products"),
 		"amount",
 		strconv.Itoa(int(min_threshold.Amount)),
 		strconv.Itoa(int(max_threshold.Amount)),
@@ -54,7 +54,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 
 	// Self_cost trashold
 	new_cond = new_condition(
-		select_contitions.Len() != len("select * from products"),
+		select_contitions.Len() != len("select * from goodbuy.products"),
 		"self_cost",
 		strconv.Itoa(int(min_threshold.Self_cost)),
 		strconv.Itoa(int(max_threshold.Self_cost)),
@@ -64,7 +64,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 
 	// Default_cost trashold
 	new_cond = new_condition(
-		select_contitions.Len() != len("select * from products"),
+		select_contitions.Len() != len("select * from goodbuy.products"),
 		"default_cost",
 		strconv.Itoa(int(min_threshold.Default_cost)),
 		strconv.Itoa(int(max_threshold.Default_cost)),
@@ -107,7 +107,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 
 	for i := 0; i < len(products); i++ {
 		var cat_name string
-		err := conn.QueryRow(context.Background(), "select category_name from product_categories where id=$1", products[i].Category).Scan(&cat_name)
+		err := conn.QueryRow(context.Background(), "select category_name from goodbuy.product_categories where id=$1", products[i].Category).Scan(&cat_name)
 		if err != nil {
 			println("Something on 180", err.Error())
 		}
@@ -118,7 +118,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 }
 
 func GetProductByID(id int) Product {
-	prod, _ := conn.Query(context.Background(), "select * from products where id=$1", id)
+	prod, _ := conn.Query(context.Background(), "select * from goodbuy.products where id=$1", id)
 	product := NewProduct()
 	for prod.Next() {
 		prod.Scan(
@@ -178,7 +178,7 @@ func new_condition(notFirst bool, value, min, max string) string {
 }
 
 func GetCategories() []Category {
-	rows, err := conn.Query(context.Background(), "select * from product_categories")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.product_categories")
 	if err != nil {
 		println("Something on 239", err.Error())
 		return nil
@@ -208,7 +208,7 @@ func GetCategories() []Category {
 
 func GetCategoryIdByName(name string) int8 {
 	var id int8
-	err := conn.QueryRow(context.Background(), "select id from product_categories where category_name=$1", name).Scan(&id)
+	err := conn.QueryRow(context.Background(), "select id from goodbuy.product_categories where category_name=$1", name).Scan(&id)
 	if err != nil {
 		println("Something on 269", err.Error())
 		return 0
@@ -218,10 +218,10 @@ func GetCategoryIdByName(name string) int8 {
 
 func GetCategoryNameById(id int8) string {
 	var name string
-	err := conn.QueryRow(context.Background(), "select category_name from product_categories where id=$1", id).Scan(&name)
+	err := conn.QueryRow(context.Background(), "select category_name from goodbuy.product_categories where id=$1", id).Scan(&name)
 	if err != nil {
 		println("Something on 269", err.Error())
-		err = conn.QueryRow(context.Background(), "select category_name from product_categories where id=0").Scan(&name)
+		err = conn.QueryRow(context.Background(), "select category_name from goodbuy.product_categories where id=0").Scan(&name)
 		if err != nil {
 			return "ОШИБКА В БАЗЕ ДАННЫХ"
 		}
@@ -229,8 +229,9 @@ func GetCategoryNameById(id int8) string {
 	return name
 }
 
+// refactor done
 func AddProduct(product Product) {
-	var query strings.Builder
+	/*var query strings.Builder
 	var val string
 	query.Grow(len("insert into products values ('"))
 	query.WriteString("insert into products values ('")
@@ -264,11 +265,25 @@ func AddProduct(product Product) {
 	query.Grow(len(")"))
 	query.WriteString(")")
 
-	conn.Exec(context.Background(), query.String())
+	conn.Exec(context.Background(), query.String())*/
+
+	_, err := conn.Exec(
+		context.Background(),
+		"call goodbuy.add_product($1, $2, $3, $4, $5)",
+		product.Name,
+		product.Default_cost,
+		product.Category_name,
+		product.Self_cost,
+		product.Amount,
+	)
+	if err != nil {
+		println("can't add product", err.Error())
+	}
 }
 
+// refactor done
 func EditProduct(id uint16, new_product Product) {
-	var val string
+	/*var val string
 	var query strings.Builder
 	query.Grow(len("update products set name = '"))
 	query.WriteString("update products set name = '")
@@ -306,5 +321,18 @@ func EditProduct(id uint16, new_product Product) {
 	query.Grow(len(val))
 	query.WriteString(val)
 
-	conn.Exec(context.Background(), query.String())
+	conn.Exec(context.Background(), query.String())*/
+
+	_, err := conn.Exec(context.Background(),
+		"call goodbuy.edit_product($1, $2, $3, $4, $5, $6)",
+		id,
+		new_product.Name,
+		new_product.Default_cost,
+		new_product.Category_name,
+		new_product.Self_cost,
+		new_product.Amount,
+	)
+	if err != nil {
+		println("can't edit the product, id:", id, err.Error())
+	}
 }
