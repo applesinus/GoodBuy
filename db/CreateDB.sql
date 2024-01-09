@@ -54,7 +54,12 @@ create table goodbuy.positions (
 insert into goodbuy.positions values
 (1, 15, 2, 1),
 (2, 20, 1, 1),
-(6, 7, 2, 1);
+(6, 7, 2, 1),
+(3, 10, 3, 1),
+(3, 10, 2, 1),
+(4, 15, 1, 1),
+(5, 10, 1, 1),
+(6, 30, 1, 1);
 
 
 create table goodbuy.receipts (
@@ -64,8 +69,11 @@ create table goodbuy.receipts (
     foreign key (status) references goodbuy.statuses (id)
 );
 insert into goodbuy.receipts values
-(date '2027-12-27', 1),
-(date '2027-12-27', 1);
+(date '2023-12-27', 1),
+(date '2023-12-27', 1),
+(date '2023-12-30', 1),
+(date '2023-12-31', 1),
+(date '2023-12-31', 1);
 
 
 create table goodbuy.positions_in_receipts (
@@ -78,7 +86,12 @@ create table goodbuy.positions_in_receipts (
 insert into goodbuy.positions_in_receipts values
 (1, 1),
 (2, 1),
-(3, 2);
+(3, 2),
+(4, 3),
+(5, 4),
+(6, 5),
+(7, 5),
+(8, 5);
 
 
 create table goodbuy.markets (
@@ -87,6 +100,9 @@ create table goodbuy.markets (
     fee integer not null default 0,
     id serial primary key
 );
+insert into goodbuy.markets values
+('Супермаркет', '[2023-12-27,2023-12-27]'),
+('Гипермаркет', '[2023-12-30, 2023-12-31]');
 
 
 create table goodbuy.receipts_on_markets (
@@ -96,7 +112,12 @@ create table goodbuy.receipts_on_markets (
     foreign key (market) references goodbuy.markets (id),
     foreign key (receipt) references goodbuy.receipts (id) on delete cascade
 );
-
+insert into goodbuy.receipts_on_markets values
+(1, 1),
+(2, 1),
+(3, 2),
+(4, 2),
+(5, 2);
 
 create table goodbuy.roles (
     name varchar unique not null,
@@ -249,10 +270,10 @@ create trigger check_default_cost_trigger_on_insert
 
 /*      FUNCTIONS       */
 
-create function goodbuy.get_top_N_products(past_days integer, n integer)
+create function goodbuy.get_top_N_products_by_sales(past_days integer, n integer)
 returns table(
     product varchar,
-    sales integer
+    sales bigint
     ) as $$
 begin
     return query
@@ -267,6 +288,61 @@ begin
     group by pr.name
     order by total_sales desc
     limit n;
+end;
+$$
+language plpgsql;
+
+create function goodbuy.get_top_N_products_by_profit(past_days integer, n integer)
+returns table(
+    product varchar,
+    profit numeric
+    ) as $$
+begin
+    return query
+    select
+        pr.name as product_name,
+        SUM((p.cost - pr.self_cost) * p.count) as profit
+    from goodbuy.positions p
+    join goodbuy.products pr on p.product = pr.id
+    join goodbuy.positions_in_receipts pir on p.id = pir.position
+    join goodbuy.receipts r on pir.receipt = r.id
+    where r.date >= (current_date - past_days * interval '1 day')
+    group by pr.name
+    order by profit desc
+    limit n;
+end;
+$$
+language plpgsql;
+
+create function goodbuy.get_N_popular_products_on_markets(n integer)
+returns table (
+    market varchar,
+    product varchar,
+    sales bigint
+    ) as $$
+begin
+    return query
+    with RankedProducts as (
+        select m.name as this_market,
+        pr.name as this_product,
+        sum(p.count) as total_sales,
+        row_number() over (partition by m.name order by sum(p.count) desc) as rank
+        from
+            goodbuy.positions p
+        join
+            goodbuy.products pr on p.product = pr.id
+        join
+            goodbuy.positions_in_receipts pir on p.id = pir.position
+        join
+            goodbuy.receipts r on pir.receipt = r.id
+        join
+            goodbuy.receipts_on_markets rm on r.id = rm.receipt
+        join
+            goodbuy.markets m on rm.market = m.id
+        group by
+            m.name, pr.name
+    )
+    select this_market, this_product, total_sales from RankedProducts where rank <= n;
 end;
 $$
 language plpgsql;
