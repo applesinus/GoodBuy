@@ -249,7 +249,7 @@ create trigger check_default_cost_trigger_on_insert
 
 /*      FUNCTIONS       */
 
-create function goodbuy.get_top_N_products(n integer)
+create function goodbuy.get_top_N_products(past_days integer, n integer)
 returns table(
     product varchar,
     sales integer
@@ -261,6 +261,9 @@ begin
         SUM(p.count) as total_sales
     from goodbuy.positions p
     join goodbuy.products pr on p.product = pr.id
+    join goodbuy.positions_in_receipts pir on p.id = pir.position
+    join goodbuy.receipts r on pir.receipt = r.id
+    where r.date >= (current_date - past_days * interval '1 day')
     group by pr.name
     order by total_sales desc
     limit n;
