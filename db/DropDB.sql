@@ -1,16 +1,15 @@
-select * from goodbuy.get_top_N_products_by_sales(500, 2);
-select * from goodbuy.get_top_N_products_by_profit(500, 3);
-select * from goodbuy.get_n_popular_products_on_markets(2);
-select * from goodbuy.positions;
+
 
 drop trigger if exists update_products_category_trigger_on_delete on goodbuy.product_categories;
 drop function if exists goodbuy.update_products_category;
+
 drop trigger if exists check_default_cost_trigger_on_insert on goodbuy.products;
 drop function if exists goodbuy.check_default_cost();
 
 drop function if exists goodbuy.get_top_N_products_by_sales;
 drop function if exists goodbuy.get_top_N_products_by_profit;
 drop function if exists goodbuy.get_N_popular_products_on_markets;
+drop function if exists goodbuy.get_income_past_N_days;
 
 drop procedure if exists goodbuy.edit_product;
 drop procedure if exists goodbuy.add_product;

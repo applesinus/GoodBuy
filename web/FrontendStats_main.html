@@ -14,12 +14,123 @@
     </div>
     <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
         <button value="new" name="general" onclick="window.location.href='#income'">Доход</button>
+        <button value="new" name="general" onclick="window.location.href='#mode'">Популярное</button>
+        <button value="new" name="general" onclick="window.location.href='#mode_on_markets'">Популярное по маркетам</button>
+        <button value="new" name="general" onclick="window.location.href='#profit'">Самые прибыльные товары</button>
     </div>
-    <br>
-    <br>
-    <div name="income">
-        <h2 style="text-align: center;">Доход:</h2>
-        <p>{{.income}}</p>
+    <div id="income">
+        <h2 style="text-align: center; margin-top: 120px;">
+            Доход за последние {{.total_days}} дней:
+        </h2>
+        <h1 style="text-align: center;">
+            {{.income_by_days}} ₽
+        </h1>
+        <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+            <table style="border: gray 1px solid;">
+                <tr>
+                    <td>
+                        <form method="post" action="">
+                            <p style="text-align: center;">
+                                Изменить период:
+                                <input type="number" step="1" name="total_days" min="1" max="9999" value="{{.total_days}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                
+
+                                        
+                                <input type="submit" name="total_days" value="Сохранить">
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="mode">
+        <h2 style="text-align: center; margin-top: 120px;">
+            ТОП-{{.mode_n}} самых продаваемых товаров за последние {{.mode_days}} дней:
+        </h2>
+        {{range .mode}}
+            <p style="text-align: center;">{{.Name}}: {{.Sales}} шт.</p>
+        {{end}}
+        <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+            <table style="border: gray 1px solid;">
+                <tr>
+                    <td>
+                        <form method="post" action="">
+                            <p style="text-align: center;">
+                                Изменить количество:
+                                <input type="number" step="1" name="mode_n" min="1" max="9999" value="{{.mode_n}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                Изменить период:
+                                <input type="number" step="1" name="mode_days" min="1" max="9999" value="{{.mode_days}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                <input type="submit" name="mode" value="Сохранить">
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="mode_on_markets">
+        <h2 style="text-align: center; margin-top: 120px;">
+            ТОП-{{.mode_on_markets_n}} самых продаваемых товаров по маркетам:
+        </h2>
+        {{range $market, $products := .mode_on_markets}}
+            <h3 style="text-align: center;">{{$market}}:</h3>
+            {{range $products}}
+                <p style="text-align: center;">{{.Name}}: {{.Sales}} шт.</p>
+            {{end}}
+        {{end}}
+        <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+            <table style="border: gray 1px solid;">
+                <tr>
+                    <td>
+                        <form method="post" action="">
+                            <p style="text-align: center;">
+                                Изменить количество:
+                                <input type="number" step="1" name="mode_on_markets_n" min="1" max="9999" value="{{.mode_on_markets_n}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                <input type="submit" name="mode_on_markets" value="Сохранить">
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="profit">
+        <h2 style="text-align: center; margin-top: 120px;">
+            ТОП-{{.profit_n}} самых прибыльных товаров за последние {{.profit_days}} дней:
+        </h2>
+        {{range .profit}}
+            <p style="text-align: center;">{{.Name}}: {{.Profit}} ₽</p>
+        {{end}}
+        <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+            <table style="border: gray 1px solid;">
+                <tr>
+                    <td>
+                        <form method="post" action="">
+                            <p style="text-align: center;">
+                                Изменить количество:
+                                <input type="number" step="1" name="profit_n" min="1" max="9999" value="{{.profit_n}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                Изменить период:
+                                <input type="number" step="1" name="profit_days" min="1" max="9999" value="{{.profit_days}}" style="max-width: 45px">
+                            </p>
+                            <p style="text-align: center;">
+                                <input type="submit" name="profit" value="Сохранить">
+                            </p>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
 </form>
 {{end}}

@@ -346,3 +346,22 @@ begin
 end;
 $$
 language plpgsql;
+
+create function goodbuy.get_income_past_N_days(n integer)
+returns bigint as $$
+declare
+    total_income bigint;
+begin
+    select coalesce(sum(p.count * p.cost), 0) as total
+    into total_income
+    from goodbuy.positions p
+    join goodbuy.positions_in_receipts pr on p.id = pr.position
+    join goodbuy.receipts r on pr.receipt = r.id
+    where r.status = 1
+      and p.status = 1
+      and r.date >= (current_date - n * interval '1 day');
+
+    return total_income;
+end;
+$$
+language plpgsql;

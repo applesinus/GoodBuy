@@ -2,15 +2,67 @@ package db
 
 import "context"
 
-func GetAllIncome() int {
+type Mode struct {
+	Name  string
+	Sales int
+}
+
+type Profit struct {
+	Name   string
+	Profit float64
+}
+
+func GetIncomePastNDays(n int) int {
 	sum := 0
-	// TODO
-	// это - заглушка для зачета по го, чтобы показать функциональность.
-	// не смотрите на реализацию с точки зрения БД
-	// запрос в красивом виде в tmpTotal.sql
-	err := conn.QueryRow(context.Background(), "select sum(p.count * p.cost) as total from goodbuy.positions p join goodbuy.positions_in_receipts pr on p.id = pr.position join goodbuy.receipts r on pr.receipt = r.id where r.status = 1 and p.status = 1;").Scan(&sum)
+	err := conn.QueryRow(context.Background(), "select * from goodbuy.get_income_past_N_days($1)", n).Scan(&sum)
 	if err != nil {
 		println("error getting total.", err.Error())
 	}
 	return sum
+}
+
+func GetMode(past_days int, n int) []Mode {
+	var mode []Mode
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.get_top_N_products_by_sales($1, $2)", past_days, n)
+	if err != nil {
+		println("error getting mode.", err.Error())
+		return mode
+	}
+	for rows.Next() {
+		var m Mode
+		rows.Scan(&m.Name, &m.Sales)
+		mode = append(mode, m)
+	}
+	return mode
+}
+
+func GetMostProfitable(past_days int, n int) []Profit {
+	var profit []Profit
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.get_top_N_products_by_profit($1, $2)", past_days, n)
+	if err != nil {
+		println("error getting profit.", err.Error())
+		return profit
+	}
+	for rows.Next() {
+		var p Profit
+		rows.Scan(&p.Name, &p.Profit)
+		profit = append(profit, p)
+	}
+	return profit
+}
+
+func GetModeOnMarkets(n int) map[string][]Mode {
+	mode := make(map[string][]Mode)
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.get_N_popular_products_on_markets($1)", n)
+	if err != nil {
+		println("error getting mode on markets.", err.Error())
+		return mode
+	}
+	for rows.Next() {
+		var m Mode
+		var market string
+		rows.Scan(&market, &m.Name, &m.Sales)
+		mode[market] = append(mode[market], m)
+	}
+	return mode
 }
