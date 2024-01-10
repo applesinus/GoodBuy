@@ -2,8 +2,6 @@ package db
 
 import (
 	"context"
-	"strconv"
-	"strings"
 )
 
 type Product struct {
@@ -23,60 +21,17 @@ type Category struct {
 }
 
 func NewProduct() Product {
-	return Product{0, 0, 0, 0, 0, "0", ""}
+	return Product{0, 0, 0, 0, 0, "", ""}
 }
 
-// TODO refactor NOW
 func GetProducts(min_threshold, max_threshold Product) []Product {
-	var select_contitions strings.Builder
-	select_contitions.Grow(len("select * from goodbuy.products"))
-	select_contitions.WriteString("select * from goodbuy.products")
-
-	// Category trashold
-	new_cond := new_condition(
-		select_contitions.Len() != len("select * from goodbuy.products"),
-		"category",
-		strconv.Itoa(int(min_threshold.Category)),
-		strconv.Itoa(int(max_threshold.Category)),
-	)
-	select_contitions.Grow(len(new_cond))
-	select_contitions.WriteString(new_cond)
-
-	// Amount trashold
-	new_cond = new_condition(
-		select_contitions.Len() != len("select * from goodbuy.products"),
-		"amount",
-		strconv.Itoa(int(min_threshold.Amount)),
-		strconv.Itoa(int(max_threshold.Amount)),
-	)
-	select_contitions.Grow(len(new_cond))
-	select_contitions.WriteString(new_cond)
-
-	// Self_cost trashold
-	new_cond = new_condition(
-		select_contitions.Len() != len("select * from goodbuy.products"),
-		"self_cost",
-		strconv.Itoa(int(min_threshold.Self_cost)),
-		strconv.Itoa(int(max_threshold.Self_cost)),
-	)
-	select_contitions.Grow(len(new_cond))
-	select_contitions.WriteString(new_cond)
-
-	// Default_cost trashold
-	new_cond = new_condition(
-		select_contitions.Len() != len("select * from goodbuy.products"),
-		"default_cost",
-		strconv.Itoa(int(min_threshold.Default_cost)),
-		strconv.Itoa(int(max_threshold.Default_cost)),
-	)
-	select_contitions.Grow(len(new_cond))
-	select_contitions.WriteString(new_cond)
-
-	select_contitions.Grow(len(" order by id"))
-	select_contitions.WriteString(" order by id")
-
-	conditions := select_contitions.String()
-	rows, err := conn.Query(context.Background(), conditions)
+	rows, err := conn.Query(
+		context.Background(),
+		"select * from goodbuy.get_filtered_products($1, $2, $3, $4, $5, $6, $7, $8) order by id",
+		min_threshold.Category, max_threshold.Category,
+		min_threshold.Amount, max_threshold.Amount,
+		min_threshold.Self_cost, max_threshold.Self_cost,
+		min_threshold.Default_cost, max_threshold.Default_cost)
 
 	if err != nil {
 		println("Something on 150", err.Error())
@@ -95,6 +50,7 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 			&product.Self_cost,
 			&product.Amount,
 			&product.Id,
+			&product.Category_name,
 		)
 		if err != nil {
 			println("Something on 168", err.Error())
@@ -104,15 +60,6 @@ func GetProducts(min_threshold, max_threshold Product) []Product {
 		products = append(products, product)
 	}
 	rows.Close()
-
-	for i := 0; i < len(products); i++ {
-		var cat_name string
-		err := conn.QueryRow(context.Background(), "select category_name from goodbuy.product_categories where id=$1", products[i].Category).Scan(&cat_name)
-		if err != nil {
-			println("Something on 180", err.Error())
-		}
-		products[i].Category_name = cat_name
-	}
 
 	return products
 }
@@ -131,50 +78,6 @@ func GetProductByID(id int) Product {
 		)
 	}
 	return product
-}
-
-func new_condition(notFirst bool, value, min, max string) string {
-	var new_cond strings.Builder
-
-	if notFirst {
-		new_cond.Grow(len(" and "))
-		new_cond.WriteString(" and ")
-	} else {
-		new_cond.Grow(len(" where "))
-		new_cond.WriteString(" where ")
-	}
-
-	if max != "0" {
-		new_cond.Grow(len(value))
-		new_cond.WriteString(value)
-		new_cond.Grow(len(" <= "))
-		new_cond.WriteString(" <= ")
-		new_cond.Grow(len(max))
-		new_cond.WriteString(max)
-		if min != "0" {
-			new_cond.Grow(len(" and "))
-			new_cond.WriteString(" and ")
-			new_cond.Grow(len(value))
-			new_cond.WriteString(value)
-			new_cond.Grow(len(" >= "))
-			new_cond.WriteString(" >= ")
-			new_cond.Grow(len(min))
-			new_cond.WriteString(min)
-		}
-	} else {
-		if min != "0" {
-			new_cond.Grow(len(value))
-			new_cond.WriteString(value)
-			new_cond.Grow(len(" >= "))
-			new_cond.WriteString(" >= ")
-			new_cond.Grow(len(min))
-			new_cond.WriteString(min)
-		} else {
-			return ""
-		}
-	}
-
-	return new_cond.String()
 }
 
 func GetCategories() []Category {

@@ -9,9 +9,6 @@ create table goodbuy.product_categories (
 );
 insert into goodbuy.product_categories values
 ('Без категории', 'Стандартная категория по умолчанию, либо в случае ошибки', 0);
-insert into goodbuy.product_categories values
-('Открытка', 'описание'),
-('Стикерпак', 'описание');
 
 
 create table goodbuy.products (
@@ -23,13 +20,6 @@ create table goodbuy.products (
     id serial primary key,
     foreign key (category) references goodbuy.product_categories (id)
 );
-insert into goodbuy.products values
-('Открытка', 15, 1, 5, 11),
-('Стикерпак', 20, 2, 5, 2),
-('Еще открытка', 1, 1, 5, 4),
-('Новый стикерпак', 11, 2, 5, 3),
-('Плоттерная штука', 4, 0, 5, 7),
-('Серьги', 7, 0, 5, 100);
 
 
 create table goodbuy.statuses (
@@ -51,15 +41,6 @@ create table goodbuy.positions (
     foreign key (status) references goodbuy.statuses (id),
     foreign key (product) references goodbuy.products (id)
 );
-insert into goodbuy.positions values
-(1, 15, 2, 1),
-(2, 20, 1, 1),
-(6, 7, 2, 1),
-(3, 10, 3, 1),
-(3, 10, 2, 1),
-(4, 15, 1, 1),
-(5, 10, 1, 1),
-(6, 30, 1, 1);
 
 
 create table goodbuy.receipts (
@@ -68,12 +49,6 @@ create table goodbuy.receipts (
     id serial primary key,
     foreign key (status) references goodbuy.statuses (id)
 );
-insert into goodbuy.receipts values
-(date '2023-12-27', 1),
-(date '2023-12-27', 1),
-(date '2023-12-30', 1),
-(date '2023-12-31', 1),
-(date '2023-12-31', 1);
 
 
 create table goodbuy.positions_in_receipts (
@@ -83,15 +58,6 @@ create table goodbuy.positions_in_receipts (
     foreign key (position) references goodbuy.positions (id) on delete cascade,
     foreign key (receipt) references goodbuy.receipts (id)
 );
-insert into goodbuy.positions_in_receipts values
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 3),
-(5, 4),
-(6, 5),
-(7, 5),
-(8, 5);
 
 
 create table goodbuy.markets (
@@ -100,9 +66,6 @@ create table goodbuy.markets (
     fee integer not null default 0,
     id serial primary key
 );
-insert into goodbuy.markets values
-('Супермаркет', '[2023-12-27,2023-12-27]'),
-('Гипермаркет', '[2023-12-30, 2023-12-31]');
 
 
 create table goodbuy.receipts_on_markets (
@@ -112,12 +75,6 @@ create table goodbuy.receipts_on_markets (
     foreign key (market) references goodbuy.markets (id),
     foreign key (receipt) references goodbuy.receipts (id) on delete cascade
 );
-insert into goodbuy.receipts_on_markets values
-(1, 1),
-(2, 1),
-(3, 2),
-(4, 2),
-(5, 2);
 
 create table goodbuy.roles (
     name varchar unique not null,
@@ -139,8 +96,7 @@ create table goodbuy.users (
     foreign key (role_id) references goodbuy.roles (id) on delete cascade
 );
 insert into goodbuy.users values (1, 'Administrator', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
-insert into goodbuy.users values (2, 'Seller', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
-insert into goodbuy.users values (3, 'Analytic', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
+
 
 
 /*      VIEWS       */
@@ -228,6 +184,50 @@ begin
         self_cost = edit_product.self_cost,
         amount = edit_product.amount
     where id = edit_product.id_edit;
+end;
+$$
+language plpgsql;
+
+
+create function goodbuy.get_filtered_products (
+    min_category integer,
+    max_category integer,
+    min_amount integer,
+    max_amount integer,
+    min_self_cost numeric,
+    max_self_cost numeric,
+    min_default_cost numeric,
+    max_default_cost numeric
+) returns table (
+    product varchar,
+    default_cost numeric,
+    category integer,
+    self_cost numeric,
+    amount integer,
+    id integer,
+    category_name varchar
+) as $$
+begin
+    return query
+    select
+        p.name,
+        p.default_cost,
+        p.category,
+        p.self_cost,
+        p.amount,
+        p.id,
+        pc.category_name
+    from goodbuy.products p
+    join goodbuy.product_categories pc on pc.id = p.category
+    where
+        (min_category = 0 or p.category >= min_category)
+        and (max_category = 0 or p.category <= max_category)
+        and (min_amount = 0 or p.amount >= min_amount)
+        and (max_amount = 0 or p.amount <= max_amount)
+        and (min_self_cost = 0 or p.self_cost >= min_self_cost)
+        and (max_self_cost = 0 or p.self_cost <= max_self_cost)
+        and (min_default_cost = 0 or p.default_cost >= min_default_cost)
+        and (max_default_cost = 0 or p.default_cost <= max_default_cost);
 end;
 $$
 language plpgsql;

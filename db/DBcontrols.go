@@ -57,6 +57,11 @@ func DropDB() {
 	println("DB dropped")
 }
 
+func AddTestData() {
+	execute_file("db/TestData.sql")
+	println("Test data added")
+}
+
 func Auth(inputed_username, inputed_password string) bool {
 	id := -1
 	err := conn.QueryRow(context.Background(), "select id from goodbuy.users where username=$1", inputed_username).Scan(&id)

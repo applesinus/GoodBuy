@@ -6,102 +6,73 @@ import (
 )
 
 type Position struct {
-	Status  uint8
 	Count   uint8
 	Id      uint16
 	Cost    float32
 	Product string
+	Status  string
 }
 
 type Receipt struct {
-	Status    uint8
 	Id        uint16
-	Total     uint16
+	Total     float64
 	Pos_len   int
 	Positions []Position
+	Status    string
 	Date      string
 }
 
 func NewPosition() Position {
-	return Position{0, 0, 0, 0, ""}
+	return Position{0, 0, 0, "OK", ""}
 }
 
 func NewReceipt() Receipt {
 	pos := make([]Position, 0)
 	pos_len := len(pos) + 1
-	return Receipt{0, 0, 0, pos_len, pos, "1999-01-01"}
+	return Receipt{0, 0, pos_len, pos, "OK", "1999-01-01"}
 }
 
-// TODO refactor NOW
 func GetAllReceipts() map[int]Receipt {
 
-	// getting all receipts
 	receipts := make(map[int]Receipt)
-	rows, err := conn.Query(context.Background(), "select * from goodbuy.receipts")
+
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.get_detailed_receipts")
+
 	if err != nil {
 		println("err on getting receipts", err.Error())
 	}
+
 	for rows.Next() {
-		reciept := NewReceipt()
+		position := NewPosition()
+		receipt := NewReceipt()
 		var date time.Time
 		err := rows.Scan(
 			&date,
-			&reciept.Status,
-			&reciept.Id,
+			&receipt.Id,
+			&receipt.Status,
+			&position.Id,
+			&position.Product,
+			&position.Cost,
+			&position.Count,
+			&position.Status,
 		)
+		receipt.Date = date.Format("2006-01-02")
 		if err != nil {
 			println("err on setting reciept's values", err.Error())
-			return nil
+			return receipts
 		}
-		reciept.Date = date.Format("2006-01-02")
-		receipts[int(reciept.Id)] = reciept
-	}
-	rows.Close()
+		id := int(receipt.Id)
 
-	// getting all positions
-	positions := make(map[int]Position)
-	rows, err = conn.Query(context.Background(), "select * from goodbuy.positions")
-	if err != nil {
-		println("err on getting positions", err.Error())
-	}
-	for rows.Next() {
-		pos := NewPosition()
-		var prod uint16
-		err := rows.Scan(
-			&prod,
-			&pos.Cost,
-			&pos.Count,
-			&pos.Status,
-			&pos.Id,
-		)
-		if err != nil {
-			println("err on setting position's values", err.Error())
-			return nil
+		if _, ok := receipts[int(receipt.Id)]; !ok {
+			receipts[id] = receipt
 		}
-		pos.Product = GetProductByID(int(prod)).Name
-		positions[int(pos.Id)] = pos
-	}
-	rows.Close()
 
-	// adding positions to receipts
-	rows, err = conn.Query(context.Background(), "select * from goodbuy.positions_in_receipts")
-	if err != nil {
-		println("err on getting pos_in_rec", err.Error())
-	}
-	for rows.Next() {
-		var pos, rec int
-		err := rows.Scan(
-			&pos,
-			&rec,
-		)
-		if err != nil {
-			println("err on setting pos_in_rec's values", err.Error())
-			return nil
-		}
-		reciept := receipts[rec]
-		reciept.Pos_len++
-		reciept.Positions = append(reciept.Positions, positions[pos])
-		receipts[rec] = reciept
+		total := float64(position.Cost) * float64(position.Count)
+		currentReceipt := receipts[id]
+		currentReceipt.Total += total
+		currentReceipt.Pos_len += 1
+		currentReceipt.Positions = append(currentReceipt.Positions, position)
+		receipts[id] = currentReceipt
 	}
 	rows.Close()
 

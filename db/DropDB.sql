@@ -10,6 +10,7 @@ drop function if exists goodbuy.get_top_N_products_by_sales;
 drop function if exists goodbuy.get_top_N_products_by_profit;
 drop function if exists goodbuy.get_N_popular_products_on_markets;
 drop function if exists goodbuy.get_income_past_N_days;
+drop function if exists goodbuy.get_filtered_products;
 
 drop procedure if exists goodbuy.edit_product;
 drop procedure if exists goodbuy.add_product;

@@ -24,7 +24,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 		role_blocks := blocks(currentUser)
 
 		data := map[string]interface{}{
-			"title": "Продукты",
+			"title": "Товары",
 			"user":  currentUser,
 		}
 
@@ -55,7 +55,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 	pds := db.GetProducts(pd, pd)
 
 	data := map[string]interface{}{
-		"title": "Продукты",
+		"title": "Товары",
 		"user":  currentUser,
 		"pds":   pds,
 	}
@@ -82,7 +82,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 		role_blocks := blocks(currentUser)
 
 		data := map[string]interface{}{
-			"title": "Продукты",
+			"title": "Добавить товар",
 			"user":  currentUser,
 		}
 
@@ -109,7 +109,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	role_blocks := blocks(currentUser)
 
 	data := map[string]interface{}{
-		"title":      "Добавить новый продукт",
+		"title":      "Добавить товар",
 		"user":       currentUser,
 		"categories": categories,
 		"alert":      "",
@@ -136,7 +136,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 		role_blocks := blocks(currentUser)
 
 		data := map[string]interface{}{
-			"title": "Продукты",
+			"title": "Изменить товар",
 			"user":  currentUser,
 		}
 
@@ -181,7 +181,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	role_blocks := blocks(currentUser)
 
 	data := map[string]interface{}{
-		"title":        "Добавить новый продукт",
+		"title":        "Изменить товар",
 		"user":         currentUser,
 		"categories":   categories,
 		"Id":           product.Id,

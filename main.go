@@ -50,6 +50,9 @@ func main() {
 				serverStatus = isRunning
 			}
 
+		case "test":
+			db.AddTestData()
+
 		case "stop":
 			server.Shutdown(nil)
 			serverStatus = isStopped
@@ -63,7 +66,7 @@ func main() {
 
 		}
 
-		println("\n====================\nServer Status: ", serverStatus, "\nEnter the server command (start, stop, exit).")
+		println("\n====================\nServer Status: ", serverStatus, "\nEnter the server command (start, stop, exit, test).")
 		fmt.Scan(&command)
 	}
 

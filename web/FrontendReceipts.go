@@ -28,7 +28,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 		role_blocks := blocks(currentUser)
 
 		data := map[string]interface{}{
-			"title": "Продукты",
+			"title": "Продажи",
 			"user":  currentUser,
 		}
 
@@ -53,7 +53,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	rcps := db.GetAllReceipts()
 
 	data := map[string]interface{}{
-		"title":    "Продукты",
+		"title":    "Продажи",
 		"user":     currentUser,
 		"receipts": rcps,
 	}
@@ -80,7 +80,7 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 		role_blocks := blocks(currentUser)
 
 		data := map[string]interface{}{
-			"title": "Продукты",
+			"title": "Оформление продажи",
 			"user":  currentUser,
 		}
 
@@ -100,7 +100,7 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 	date.Y, date.M, date.D = time.Now().Date()
 
 	data := map[string]interface{}{
-		"title": "Продукты",
+		"title": "Оформление продажи",
 		"user":  currentUser,
 		"Date":  date,
 		"pds":   pds,
