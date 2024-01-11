@@ -213,7 +213,7 @@ func InitFront() {
 	http.HandleFunc("/products/edit", products_edit)
 
 	http.HandleFunc("/receipts", receipts)
-	http.HandleFunc("/receipts/new", reciepts_new)
+	http.HandleFunc("/receipts/new", receipts_new)
 
 	http.HandleFunc("/admin", admin)
 

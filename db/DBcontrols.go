@@ -36,7 +36,7 @@ func StartDB() {
 
 	// test if the DB exist or corrupted. if this is the case for now it fully remakes (!not recover!) the DB
 	var test string
-	err = conn.QueryRow(context.Background(), "select description from statuses where id=$1", 1).Scan(&test)
+	err = conn.QueryRow(context.Background(), "select description from goodbuy.statuses where id=$1", 1).Scan(&test)
 	if err != nil {
 		// DB doesn't seem to exist
 		CreateDB()

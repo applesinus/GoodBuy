@@ -12,6 +12,8 @@ drop function if exists goodbuy.get_N_popular_products_on_markets;
 drop function if exists goodbuy.get_income_past_N_days;
 drop function if exists goodbuy.get_filtered_products;
 
+drop procedure if exists goodbuy.new_receipt;
+drop type if exists goodbuy.position_data_type;
 drop procedure if exists goodbuy.edit_product;
 drop procedure if exists goodbuy.add_product;
 

@@ -2,7 +2,10 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type Position struct {
@@ -28,7 +31,7 @@ func NewPosition() Position {
 
 func NewReceipt() Receipt {
 	pos := make([]Position, 0)
-	pos_len := len(pos) + 1
+	pos_len := len(pos)
 	return Receipt{0, 0, pos_len, pos, "OK", "1999-01-01"}
 }
 
@@ -58,7 +61,7 @@ func GetAllReceipts() map[int]Receipt {
 		)
 		receipt.Date = date.Format("2006-01-02")
 		if err != nil {
-			println("err on setting reciept's values", err.Error())
+			println("err on setting receipt's values", err.Error())
 			return receipts
 		}
 		id := int(receipt.Id)
@@ -77,4 +80,41 @@ func GetAllReceipts() map[int]Receipt {
 	rows.Close()
 
 	return receipts
+}
+
+type PositionData struct {
+	Count   int
+	Id      int
+	Cost    float32
+	Product string
+	Status  string
+}
+
+func AddNewReceipt(receipt Receipt) {
+	// Упаковываем данные позиций в массив интерфейсных значений
+	positionData := preparePositionData(receipt.Positions)
+
+	// Вызываем хранимую процедуру с использованием pq.Array
+	_, err := conn.Exec(context.Background(), "CALL goodbuy.new_receipt($1::date, $2::goodbuy.position_data_type[])", receipt.Date, pq.Array(positionData))
+	if err != nil {
+		println(err.Error())
+		return
+	}
+
+	fmt.Println("New receipt added successfully.")
+}
+
+func preparePositionData(positions []Position) []interface{} {
+	var data []interface{}
+	for _, pos := range positions {
+		data = append(data, map[string]interface{}{
+			"Count":   int(pos.Count),
+			"Id":      int(pos.Id),
+			"Cost":    float64(pos.Cost),
+			"Product": pos.Product,
+			"Status":  pos.Status,
+		})
+	}
+
+	return data
 }

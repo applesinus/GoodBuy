@@ -4,6 +4,7 @@ import (
 	"GoodBuy/db"
 	"html/template"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -52,6 +53,11 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 
 	rcps := db.GetAllReceipts()
 
+	for i, rcp := range rcps {
+		rcp.Pos_len++
+		rcps[i] = rcp
+	}
+
 	data := map[string]interface{}{
 		"title":    "Продажи",
 		"user":     currentUser,
@@ -65,7 +71,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func reciepts_new(w http.ResponseWriter, r *http.Request) {
+func receipts_new(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if !isLoggedIn(w, r) {
 		t, _ := template.ParseFiles("web/redirect.html")
@@ -90,6 +96,30 @@ func reciepts_new(w http.ResponseWriter, r *http.Request) {
 			println(err.Error())
 		}
 		return
+	}
+
+	if r.Method == http.MethodPost {
+		i := 1
+		receipt := db.NewReceipt()
+		receipt.Date = time.Now().Format("2006-01-02")
+
+		for {
+			if r.PostFormValue("product"+strconv.Itoa(i)) != "" {
+				position := db.NewPosition()
+				position.Product = r.PostFormValue("product" + strconv.Itoa(i))
+				cost, _ := strconv.ParseFloat(r.PostFormValue("cost"+strconv.Itoa(i)), 64)
+				position.Cost = float32(cost)
+				count, _ := strconv.ParseUint(r.PostFormValue("count"+strconv.Itoa(i)), 10, 8)
+				position.Count = uint8(count)
+				position.Status = "OK"
+				receipt.Positions = append(receipt.Positions, position)
+				receipt.Pos_len++
+			} else {
+				break
+			}
+			i++
+		}
+		db.AddNewReceipt(receipt)
 	}
 
 	role_blocks := blocks(currentUser)

@@ -25,74 +25,144 @@
         text-align: center;
     }
 </style>
-<table id="receipt" style="border-collapse: collapse;">
-    <tbody>
-        <tr>
-            <th class="underline" rowspan="2">
-                Дата
-            </th>
-            <th style="text-align: center;" colspan="4">
-                Позиция
-            </th>
-            <th class="underline" rowspan="2">
-                Сумма
-            </th>
-        </tr>
-        <tr>
-            <td class="underline">Продукт</td>
-            <td class="underline">Цена</td>
-            <td class="underline">Кол-во</td>
-        </tr>
-        <tr>
-            <td rowspan="2" class="one_line">
-                    {{.Date.Y}}-{{.Date.M}}-{{.Date.D}}
-            </td>
-            <td colspan="4" style="padding: 0;"></td>
-            <td rowspan="2" class="one_line">
-                Total
-            </td>
-        </tr>
-        <tr>
-            <form method="post" action="">
+<form method="post" action="">
+    <table id="receipt" style="border-collapse: collapse;">
+        <tbody>
+            <tr>
+                <th class="underline" rowspan="2">
+                    Дата
+                </th>
+                <th style="text-align: center;" colspan="4">
+                    Позиция
+                </th>
+                <th class="underline" rowspan="2">
+                    Сумма
+                </th>
+            </tr>
+            <tr>
+                <td class="underline">Продукт</td>
+                <td class="underline">Цена</td>
+                <td class="underline">Кол-во</td>
+            </tr>
+            <tr>
+                <td rowspan="2" class="one_line">
+                        {{.Date.Y}}-{{.Date.M}}-{{.Date.D}}
+                </td>
+                <td colspan="4" style="padding: 0;"></td>
+                <td rowspan="2" id="total" class="one_line">
+                    0
+                </td>
+            </tr>
+            <tr>
                 <td class="underline">
-                    <select id="product" style="width: 300px;">
+                    <select id="product1" name="product1" style="width: 300px;">
                         {{range .pds}}
                             <option value="{{.Id}}">{{.Name}}</option>
                         {{end}}
                     </select>
                     <script>
                         $(document).ready(function() {
-                            $('#product').select2();
+                            $('#product1').select2();
                         });
                     </script>                                            
                 </td>
                 <td class="underline">
-                    <input type="number" step="0.01" name="cost" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                    <input type="number" step="0.01" id="cost1" name="cost1" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
                 </td>
                 <td class="underline">
-                    <input type="number" step="1" name="count" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
+                    <input type="number" step="1" id="count1" name="count1" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">
                 </td>
-            </form>
-        </tr>
-    </tbody>
-</table>
-<div style="text-align: center; padding: 20px;">
-    <button type="button" onclick="addRow()">Добавить позицию</button>
-</div>
+            </tr>
+        </tbody>
+    </table>
+    <div style="text-align: center; padding: 20px;">
+        <button type="button" onclick="addRow()">Добавить позицию</button>
+    </div>
+
+    <p style="text-align: center; padding-top: 50px;">
+        <button type="submit">Оформить</button>
+    </p>
+</form>
 
 <script>
-    function addRow() {
-        var table = document.getElementById("receipt");
-        var rowCount = table.rows.length;
-        var newRow = table.insertRow(rowCount);
-        var cell1 = newRow.insertCell(0);
-        var cell2 = newRow.insertCell(1);
 
-        var cells = document.getElementsByClassName("one_line");
-        for (var i = 0; i < cells.length; i++) {
-            var rowCount = cells[i].rowSpan;
-            cells[i].rowSpan = rowCount + 1;
-        }
-    }
+    function updateTotal() {
+    // Объявляем переменную total и устанавливаем начальное значение 0
+    var total = 0;
+
+    // Перебираем все строки таблицы кроме заголовка
+    $('#receipt tbody tr:gt(0)').each(function () {
+        // Получаем значения цены и количества для текущей строки
+        var cost = parseFloat($(this).find('input[id^="cost"]').val()) || 0;
+        var count = parseInt($(this).find('input[id^="count"]').val()) || 0;
+
+        // Вычисляем сумму для текущей строки
+        var rowTotal = cost * count;
+
+        // Добавляем сумму текущей строки к общей сумме
+        total += rowTotal;
+    });
+
+    // Обновляем значение ячейки с общей суммой
+    $('#total').text(total.toFixed(2));
+}
+
+    // Добавление слушателей событий для инпутов
+    $(document).ready(function() {
+        $('input[id^="cost"], input[id^="count"]').on('input', function() {
+            updateTotal();
+        });
+    });
+
+    function addRow() {
+    var table = $("#receipt tbody");
+    var rowCount = table.find("tr").length - 2;
+
+    // Создаем новую строку
+    var newRow = $("<tr>" +
+        '<td class="underline">' +
+        '  <select id="product' + rowCount + '" name="product' + rowCount + '" style="width: 300px;"></select>' +
+        '</td>' +
+        '<td class="underline">' +
+        '  <input type="number" step="0.01" id="cost' + rowCount + '" name="cost' + rowCount + '" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">' +
+        '</td>' +
+        '<td class="underline">' +
+        '  <input type="number" step="1" id="count' + rowCount + '" name="count' + rowCount + '" placeholder="Не менее 0" min="0" value="0" style="max-width: 80px">' +
+        '</td>' +
+        '</tr>');
+
+    // Добавляем новую строку в таблицу
+    table.append(newRow);
+
+    // Копируем опции из существующего селекта
+    var options = $('#product1').html();
+    newRow.find('select').html(options);
+
+    // Применяем Select2 к новому элементу
+    
+    $(document).ready(function() {
+        newRow.find('select').select2();
+    });
+
+    // Обновление total при изменении новых инпутов
+    newRow.find('input[id^="cost"], input[id^="count"]').on('input', function() {
+        updateTotal();
+    });
+
+    // Обновляем значения в ячейках новой строки, чтобы избежать отображения "undefined"
+    newRow.find('input[id^="cost"]').val("0");
+    newRow.find('input[id^="count"]').val("0");
+
+    // Обновляем total после добавления новой строки
+    updateTotal();
+
+    // Обновляем rowspan ячейки "one_line"
+    var cells = table.find(".one_line");
+    cells.each(function() {
+        var rowSpan = $(this).attr('rowSpan');
+        $(this).attr('rowSpan', parseInt(rowSpan) + 1);
+    });
+}
 </script>
+
 {{end}}
