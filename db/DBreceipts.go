@@ -91,10 +91,8 @@ type PositionData struct {
 }
 
 func AddNewReceipt(receipt Receipt) {
-	// Упаковываем данные позиций в массив интерфейсных значений
 	positionData := preparePositionData(receipt.Positions)
 
-	// Вызываем хранимую процедуру с использованием pq.Array
 	_, err := conn.Exec(context.Background(), "CALL goodbuy.new_receipt($1::date, $2::goodbuy.position_data_type[])", receipt.Date, pq.Array(positionData))
 	if err != nil {
 		println(err.Error())

@@ -134,42 +134,6 @@ func GetCategoryNameById(id int8) string {
 
 // refactor done
 func AddProduct(product Product) {
-	/*var query strings.Builder
-	var val string
-	query.Grow(len("insert into products values ('"))
-	query.WriteString("insert into products values ('")
-
-	query.Grow(len(product.Name))
-	query.WriteString(product.Name)
-	query.Grow(len("', "))
-	query.WriteString("', ")
-
-	val = fmt.Sprintf("%.2f", product.Default_cost)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", "))
-	query.WriteString(", ")
-
-	val = fmt.Sprintf("%v", product.Category)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", "))
-	query.WriteString(", ")
-
-	val = fmt.Sprintf("%.2f", product.Self_cost)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", "))
-	query.WriteString(", ")
-
-	val = fmt.Sprintf("%v", product.Amount)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(")"))
-	query.WriteString(")")
-
-	conn.Exec(context.Background(), query.String())*/
-
 	_, err := conn.Exec(
 		context.Background(),
 		"call goodbuy.add_product($1, $2, $3, $4, $5)",
@@ -186,45 +150,6 @@ func AddProduct(product Product) {
 
 // refactor done
 func EditProduct(id uint16, new_product Product) {
-	/*var val string
-	var query strings.Builder
-	query.Grow(len("update products set name = '"))
-	query.WriteString("update products set name = '")
-
-	query.Grow(len(new_product.Name))
-	query.WriteString(new_product.Name)
-	query.Grow(len("', default_cost = "))
-	query.WriteString("', default_cost = ")
-
-	val = fmt.Sprintf("%.2f", new_product.Default_cost)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", category = "))
-	query.WriteString(", category = ")
-
-	val = fmt.Sprintf("%v", new_product.Category)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", self_cost = "))
-	query.WriteString(", self_cost = ")
-
-	val = fmt.Sprintf("%.2f", new_product.Self_cost)
-	query.Grow(len(val))
-	query.WriteString(val)
-	query.Grow(len(", amount = "))
-	query.WriteString(", amount = ")
-
-	val = fmt.Sprintf("%v", new_product.Amount)
-	query.Grow(len(val))
-	query.WriteString(val)
-
-	query.Grow(len(" where id = "))
-	query.WriteString(" where id = ")
-	val = fmt.Sprintf("%v", id)
-	query.Grow(len(val))
-	query.WriteString(val)
-
-	conn.Exec(context.Background(), query.String())*/
 
 	_, err := conn.Exec(context.Background(),
 		"call goodbuy.edit_product($1, $2, $3, $4, $5, $6)",
