@@ -136,3 +136,10 @@ func GrantRoleToUser(user string, role_id int) {
 		println("Failed to grant the role.", err.Error())
 	}
 }
+
+func AddMarket(name string, date_start, date_end string, fee float64) {
+	_, err := conn.Exec(context.Background(), "call goodbuy.add_market($1, $2, $3, $4)", name, date_start, date_end, fee)
+	if err != nil {
+		println("Failed to add the market.", err.Error())
+	}
+}

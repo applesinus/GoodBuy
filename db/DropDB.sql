@@ -16,6 +16,7 @@ drop procedure if exists goodbuy.new_receipt;
 drop type if exists goodbuy.position_data_type;
 drop procedure if exists goodbuy.edit_product;
 drop procedure if exists goodbuy.add_product;
+drop procedure if exists goodbuy.add_market;
 
 drop view if exists goodbuy.get_products;
 drop view if exists goodbuy.get_detailed_receipts;

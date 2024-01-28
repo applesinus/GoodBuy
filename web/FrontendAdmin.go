@@ -40,6 +40,10 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			user, _ := strconv.Atoi(r.PostFormValue("change"))
 			db.GrantRoleToUser(db.GetUsernameById(uint8(user)), role)
 		}
+		if r.PostFormValue("add_market") != "" {
+			fee, _ := strconv.ParseFloat(r.PostFormValue("fee"), 64)
+			db.AddMarket(r.PostFormValue("market"), r.PostFormValue("date_start"), r.PostFormValue("date_end"), fee)
+		}
 	}
 
 	role_blocks := blocks(currentUser)
