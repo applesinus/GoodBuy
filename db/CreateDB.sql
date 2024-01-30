@@ -63,7 +63,7 @@ create table goodbuy.positions_in_receipts (
 create table goodbuy.markets (
     name varchar not null,
     dates daterange not null,
-    fee integer not null default 0,
+    fee numeric(6, 2) not null default 0,
     id serial primary key
 );
 
@@ -164,6 +164,22 @@ end;
 $$
 language plpgsql;
 
+create procedure goodbuy.add_market(
+    inp_name varchar,
+    inp_date_start date,
+    inp_date_end date,
+    inp_fee numeric(6, 2)
+) as $$
+begin
+    insert into goodbuy.markets values
+    (
+     inp_name,
+     daterange(inp_date_start, inp_date_end),
+     inp_fee
+    );
+end;
+$$
+language plpgsql;
 
 create procedure goodbuy.add_product(
     name varchar,

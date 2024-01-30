@@ -28,7 +28,7 @@ func NewPosition() Position {
 
 func NewReceipt() Receipt {
 	pos := make([]Position, 0)
-	pos_len := len(pos)
+	pos_len := len(pos) + 1
 	return Receipt{0, 0, pos_len, pos, "OK", "1999-01-01"}
 }
 
@@ -58,7 +58,7 @@ func GetAllReceipts() map[int]Receipt {
 		)
 		receipt.Date = date.Format("2006-01-02")
 		if err != nil {
-			println("err on setting receipt's values", err.Error())
+			println("err on setting reciept's values", err.Error())
 			return receipts
 		}
 		id := int(receipt.Id)
