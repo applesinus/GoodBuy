@@ -133,39 +133,33 @@ create view goodbuy.get_detailed_receipts as
 
 /*      PROCEDURES      */
 
-create type goodbuy.position_data_type as (
-    Count   integer,
-	Id      integer,
-	Cost    numeric,
-	Product varchar,
-	Status  varchar
-);
+create function goodbuy.new_receipt() returns integer as $$
+declare
+    new_id integer;
+begin
+    insert into goodbuy.receipts values (current_date) returning id into new_id;
+    return new_id;
+end;
+$$
+language plpgsql;
 
-
-create procedure goodbuy.new_receipt(
-    receipt_date date,
-    position_data goodbuy.position_data_type[]
+create procedure goodbuy.new_position(
+    rec_id integer,
+    new_product varchar,
+    new_cost numeric,
+    new_count integer
 ) as $$
 declare
-    receipt_id integer;
-    position_id integer;
-    pos_row goodbuy.position_data_type;
+    pos_id integer;
 begin
-    insert into goodbuy.receipts values (receipt_date, 1)
-                                 returning id into receipt_id;
+    insert into goodbuy.positions values
+    (
+     (select id from goodbuy.products where name = new_product),
+     new_cost,
+     new_count
+    ) returning id into pos_id;
 
-    foreach pos_row in array position_data
-    loop
-        insert into goodbuy.positions values
-        (
-         (select id from goodbuy.products where name = pos_row.Product),
-         pos_row.Cost,
-         pos_row.Count,
-         1
-        ) returning id into position_id;
-
-        insert into goodbuy.positions_in_receipts values (position_id, receipt_id);
-    end loop;
+    insert into goodbuy.positions_in_receipts values (pos_id, rec_id);
 end;
 $$
 language plpgsql;

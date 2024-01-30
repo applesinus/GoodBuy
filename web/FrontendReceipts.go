@@ -106,7 +106,8 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 		for {
 			if r.PostFormValue("product"+strconv.Itoa(i)) != "" {
 				position := db.NewPosition()
-				position.Product = r.PostFormValue("product" + strconv.Itoa(i))
+				pr_id, _ := strconv.Atoi(r.PostFormValue("product" + strconv.Itoa(i)))
+				position.Product = db.GetProductByID(pr_id).Name
 				cost, _ := strconv.ParseFloat(r.PostFormValue("cost"+strconv.Itoa(i)), 64)
 				position.Cost = float32(cost)
 				count, _ := strconv.ParseUint(r.PostFormValue("count"+strconv.Itoa(i)), 10, 8)

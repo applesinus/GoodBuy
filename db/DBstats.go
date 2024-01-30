@@ -33,6 +33,7 @@ func GetMode(past_days int, n int) []Mode {
 		rows.Scan(&m.Name, &m.Sales)
 		mode = append(mode, m)
 	}
+	rows.Close()
 	return mode
 }
 
@@ -48,6 +49,7 @@ func GetMostProfitable(past_days int, n int) []Profit {
 		rows.Scan(&p.Name, &p.Profit)
 		profit = append(profit, p)
 	}
+	rows.Close()
 	return profit
 }
 
@@ -64,5 +66,6 @@ func GetModeOnMarkets(n int) map[string][]Mode {
 		rows.Scan(&market, &m.Name, &m.Sales)
 		mode[market] = append(mode[market], m)
 	}
+	rows.Close()
 	return mode
 }

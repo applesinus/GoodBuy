@@ -93,6 +93,7 @@ func GetRoles() []Role {
 		rows.Scan(&role.Name, &role.Id)
 		roles = append(roles, role)
 	}
+	rows.Close()
 
 	return roles
 }
