@@ -12,44 +12,142 @@
     <div>
         <p><h1 style="display: flex; justify-content: center;">Панель администратора</h1></p>
     </div>
+
     <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
         <button value="new" name="general" onclick="window.location.href='#users'">Пользователи</button>
+        <button value="new" name="general" onclick="window.location.href='#product_categories'">Категории товаров</button>
         <button value="new" name="general" onclick="window.location.href='#markets'">Добавить маркет</button>
+        <button value="new" name="general" onclick="window.location.href='#sql'">Выполнить SQL запрос</button>
     </div>
-    <br>
-    <br>
+
     <div id="users">
         <form method="post" action="">
             <h2 style="text-align: center; margin-top: 120px;">Пользователи</h2>
-            <table style="border-collapse: collapse;">
+            <table style="border-collapse: collapse; width: 100%;">
                 <tbody>
                     <tr>
                         <th>id</th>
                         <th>Имя</th>
                         <th>Роль</th>
+                        <th>Пароль</th>
                         <th></th>
                     </tr>
+
                     {{range $users := .users}}
                     <tr>
                         <td>
-                            <input type="number" name="id{{$users.Id}}" value="{{$users.Id}}" readonly
+                            <input type="number" name="userid{{$users.Id}}" value="{{$users.Id}}" readonly
                         style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
                         </td>
                         <td style="font-weight: bold">{{$users.Name}}</td>
                         <td>
-                            <select name="role{{.Id}}">
+                            <select name="role{{$users.Id}}">
                                 {{range $roles := $.roles}}
                                 <option value="{{$roles.Id}}" {{if eq $roles.Name $users.Role}} selected="selected" {{end}}>{{$roles.Name}}</option>
                                 {{end}}
                             </select>
                         </td>
-                        <td><button value="{{.Id}}" name="change">Обновить</button></td>
+                        <td>
+                            <details>
+                                <summary>Сменить пароль</summary>
+                                
+                                <input type="password" name="password{{$users.Id}}" placeholder="Новый пароль" style="width: 80%;">
+                                <br>
+                                Если оставить поле пустым, пароль останется прежним.
+                            </details>
+                        </td>
+                        <td><button value="user{{$users.Id}}" name="changeUser">Обновить</button></td>
                     </tr>
                     {{end}}
+
+                    <tr>
+                        <td colspan="5" style="text-align: center; font-weight: bold; padding-top: 50px;">
+                            ДОБАВИТЬ НОВОГО ПОЛЬЗОВАТЕЛЯ
+                            <br>
+                            <b style="color: red;">(пока что не работает)</b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" name="userNew" value="NEW" readonly
+                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        </td>
+                        <td style="font-weight: bold">
+                            <input type="text", name="userNEWname" placeholder="Имя пользователя">
+                        </td>
+                        <td>
+                            <select name="roleNEW">
+                                {{range $roles := $.roles}}
+                                <option value="{{$roles.Id}}" {{if eq $roles.Name "Unknown"}} selected="selected" {{end}}>{{$roles.Name}}</option>
+                                {{end}}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="password" name="passwordNew" placeholder="Новый пароль" style="width: 80%;">
+                            <br>
+                            Если оставить поле пустым, пароль по умолчанию будет passw0rd.
+                        </td>
+                        <td><button value="userNEW" name="changeUser">Добавить</button></td>
+                    </tr>
                 </tbody>
             </table>
         </form>
     </div>
+
+    <div id="product_categories">
+        <form method="post" action="">
+            <h2 style="text-align: center; margin-top: 120px;">Категории товаров</h2>
+            <table style="border-collapse: collapse;">
+                <tbody>
+                    <tr>
+                        <th>id</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th></th>
+                    </tr>
+                    {{range $product_categories := .product_categories}}
+                    <tr>
+                        <td>
+                            <input type="number" name="pcid{{$product_categories.Cat_id}}" value="{{$product_categories.Cat_id}}" readonly
+                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        </td>
+                        <td style="font-weight: bold">
+                            <input type="text", name="pc{{$product_categories.Cat_id}}name" placeholder="Название категории" value="{{$product_categories.Cat_name}}">
+                        </td>
+                        <td>
+                            <textarea style="field-sizing: content; width: 400px;", name="pc{{$product_categories.Cat_id}}description" placeholder="Описание категории">{{$product_categories.Cat_description}}</textarea>
+                        </td>
+                        <td><button value="product_category{{$product_categories.Cat_id}}" name="changeProductCategory">Обновить</button></td>
+                    </tr>
+                    {{end}}
+
+                    <tr>
+                        <td colspan="4" style="text-align: center; font-weight: bold; padding-top: 50px;">
+                            ДОБАВИТЬ НОВУЮ КАТЕГОРИЮ
+                            <br>
+                            <b style="color: red;">(пока что не работает)</b>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" name="pcidNew" value="NEW" readonly
+                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        </td>
+                        <td style="font-weight: bold">
+                            <input type="text", name="pcNEWname" placeholder="Название категории">
+                        </td>
+                        <td>
+                            <textarea style="field-sizing: content; width: 400px;", name="pcNEWdescription" placeholder="Описание категории"></textarea>
+                        </td>
+                        <td><button value="product_categoryNEW" name="changeProductCategory">Добавить</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
     <div id="markets">
         <form method="post" action="">
             <h2 style="text-align: center; margin-top: 120px;">Добавить маркет</h2>
@@ -75,6 +173,25 @@
                     <input type="submit" name="add_market" value="Добавить">
                 </p>
             </table>
+        </form>
+    </div>
+
+    <div id="sql">
+        <form method="post" action="">
+            <h2 style="text-align: center; margin-top: 120px;">Выполнить SQL запрос к базе данных</h2>
+            <p style="text-align: center">
+                Опасное действие, которое может привести к непредсказуемым результатам.
+                <br>
+                Проконсультируйтесь с ответственным лицом перед выполнением запроса.
+                <br>
+                <b style="color: red;">(пока что не работает)</b>
+            </p>
+            
+
+            <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
+                <input type="text" name="sql_query" placeholder="Введите SQL запрос" style="width: 75%; text-align: center;">
+                <input type="submit" name="run_sql" value="Выполнить" style="width: 15%; text-align: center;">
+            </div>
         </form>
     </div>
 </form>

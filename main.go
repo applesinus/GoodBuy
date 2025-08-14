@@ -33,7 +33,7 @@ func main() {
 		case "start":
 			if serverStatus != isRunning {
 				server = &http.Server{
-					Addr: "localhost:8111",
+					Addr: "localhost:8080",
 				}
 				serverIsRunning := make(chan bool)
 				go func(serverIsRunning chan bool) {
