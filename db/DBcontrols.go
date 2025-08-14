@@ -10,7 +10,7 @@ import (
 var conn *pgx.Conn
 var connection_err error
 
-var psql_port = "10000/postgres"
+var psql_port = "5432/postgres"
 
 func execute_file(file_name string) {
 	commands, err := os.ReadFile(file_name)

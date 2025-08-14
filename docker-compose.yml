@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres
+    container_name: goodbuy_postgres
+    environment:
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_USER: user
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
