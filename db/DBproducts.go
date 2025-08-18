@@ -81,7 +81,7 @@ func GetProductByID(id int) Product {
 }
 
 func GetCategories() []Category {
-	rows, err := conn.Query(context.Background(), "select * from goodbuy.product_categories")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.product_categories order by id")
 	if err != nil {
 		println("Something on 239", err.Error())
 		return nil
@@ -132,7 +132,20 @@ func GetCategoryNameById(id int8) string {
 	return name
 }
 
-// refactor done
+func AddProductCategory(name string, description string) {
+	_, err := conn.Exec(context.Background(), "insert into goodbuy.product_categories values ($1, $2);", name, description)
+	if err != nil {
+		println("Failed to add a product category", err.Error())
+	}
+}
+
+func UpdateProductCategory(id uint8, name string, description string) {
+	_, err := conn.Exec(context.Background(), "update goodbuy.product_categories set category_name=$1, description=$2 where id=$3", name, description, id)
+	if err != nil {
+		println("Failed to add a product category", err.Error())
+	}
+}
+
 func AddProduct(product Product) {
 	_, err := conn.Exec(
 		context.Background(),
@@ -148,7 +161,6 @@ func AddProduct(product Product) {
 	}
 }
 
-// refactor done
 func EditProduct(id uint16, new_product Product) {
 
 	_, err := conn.Exec(context.Background(),

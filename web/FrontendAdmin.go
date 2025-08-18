@@ -2,6 +2,7 @@ package web
 
 import (
 	"GoodBuy/db"
+	"GoodBuy/security"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -18,7 +19,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" {
 		role_blocks := blocks(currentUser)
 
@@ -39,17 +40,45 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		if targetUser := r.PostFormValue("changeUser"); targetUser != "" {
 			targetUser = strings.TrimPrefix(targetUser, "user")
 			role, _ := strconv.Atoi(r.PostFormValue("role" + targetUser))
-			user, _ := strconv.Atoi(targetUser)
-			db.GrantRoleToUser(db.GetUsernameById(uint8(user)), role)
+			password := r.PostFormValue("password" + targetUser)
+
+			if strings.ToLower(targetUser) != "new" {
+				user, _ := strconv.Atoi(targetUser)
+
+				if db.GetRolenameByID(uint8(role)) != db.GetRolenameOfUsername(targetUser) {
+					db.GrantRoleToUser(uint8(user), role)
+				}
+
+				if password != "" {
+					db.ChangeUserPassword(uint8(user), security.Hash(password))
+				}
+			} else {
+				username := r.PostFormValue("username" + targetUser)
+				if password == "" {
+					password = "Passw0rd"
+				}
+				if !db.IsUserExist(username) {
+					db.RegisterUser(username, security.Hash(password))
+				}
+			}
 		}
 
-		/*if targetProductCategory := r.PostFormValue("changeProductCategory"); targetProductCategory != "" {
+		if targetProductCategory := r.PostFormValue("changeProductCategory"); targetProductCategory != "" {
 			targetProductCategory = strings.TrimPrefix(targetProductCategory, "product_category")
-			name, _ := strconv.Atoi(r.PostFormValue("product_category" + targetProductCategory))
-			description, _ := strconv.Atoi(r.PostFormValue("description" + targetProductCategory))
-			user, _ := strconv.Atoi(targetProductCategory)
-			db.ChangeProductCategoryDescription(db.GetUsernameById(uint8(user)), role)
-		}*/
+			name := r.PostFormValue("pcname" + targetProductCategory)
+			description := r.PostFormValue("pcdescription" + targetProductCategory)
+
+			if strings.ToLower(targetProductCategory) != "new" {
+				productID, err := strconv.Atoi(targetProductCategory)
+				if err == nil {
+					db.UpdateProductCategory(uint8(productID), name, description)
+				} else {
+					println("Something on getting product ID", err.Error())
+				}
+			} else {
+				db.AddProductCategory(name, description)
+			}
+		}
 
 		if r.PostFormValue("add_market") != "" {
 			fee, _ := strconv.ParseFloat(r.PostFormValue("fee"), 64)

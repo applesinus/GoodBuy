@@ -12,7 +12,7 @@ var reURL string
 func blocks(user string) string {
 
 	var role_blocks string
-	switch db.GetRoleOfUser(user) {
+	switch db.GetRolenameOfUsername(user) {
 	case "Admin":
 		role_blocks = "blocks_admin.html"
 	case "Salesman":
@@ -153,7 +153,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 
-	t, _ := template.ParseFiles("web/redirect.html")
+	t, err := template.ParseFiles("web/redirect.html")
 	t.Execute(w, "/login")
 	if err != nil {
 		println(err.Error())

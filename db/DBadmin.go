@@ -26,7 +26,7 @@ func GetUsers() []User {
 	tmp_users := make([]temp_user, 0)
 	all_users := make([]User, 0)
 
-	rows, err := conn.Query(context.Background(), "select * from goodbuy.users")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.users order by id")
 	if err != nil {
 		println(err.Error())
 		return all_users
@@ -55,6 +55,24 @@ func GetUsers() []User {
 	}
 
 	return all_users
+}
+
+func IsUserExist(username string) bool {
+	exist := false
+
+	rows, err := conn.Query(context.Background(), "select id from goodbuy.users where username=$1", username)
+	if err != nil {
+		println("Error on getting user", err.Error())
+		return exist
+	}
+
+	for rows.Next() {
+		exist = true
+		break
+	}
+	rows.Close()
+
+	return exist
 }
 
 func NewUser() User {
@@ -98,9 +116,18 @@ func GetRoles() []Role {
 	return roles
 }
 
-func GetRoleOfUser(username string) string {
+func GetRolenameOfUsername(username string) string {
 	role := "error"
 	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id = (select role_id from goodbuy.users where username=$1)", username).Scan(&role)
+	if err != nil {
+		println(err.Error())
+	}
+	return role
+}
+
+func GetRolenameByID(roleID uint8) string {
+	role := "error"
+	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id=$1", roleID).Scan(&role)
 	if err != nil {
 		println(err.Error())
 	}
@@ -131,10 +158,17 @@ func GetIdOfRole(role string) uint8 {
 	return id
 }
 
-func GrantRoleToUser(user string, role_id int) {
-	_, err := conn.Exec(context.Background(), "update goodbuy.users set role_id=$1 where username=$2", role_id, user)
+func GrantRoleToUser(userID uint8, role_id int) {
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set role_id=$1 where id=$2", role_id, userID)
 	if err != nil {
 		println("Failed to grant the role.", err.Error())
+	}
+}
+
+func ChangeUserPassword(userID uint8, password string) {
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set password=$1 where id=$2", password, userID)
+	if err != nil {
+		println("Failed to change the password.", err.Error())
 	}
 }
 

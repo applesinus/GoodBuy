@@ -21,7 +21,7 @@
     </div>
 
     <div id="users">
-        <form method="post" action="">
+        <form method="post" action="" autocomplete="off">
             <h2 style="text-align: center; margin-top: 120px;">Пользователи</h2>
             <table style="border-collapse: collapse; width: 100%;">
                 <tbody>
@@ -37,7 +37,7 @@
                     <tr>
                         <td>
                             <input type="number" name="userid{{$users.Id}}" value="{{$users.Id}}" readonly
-                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
                         <td style="font-weight: bold">{{$users.Name}}</td>
                         <td>
@@ -63,18 +63,16 @@
                     <tr>
                         <td colspan="5" style="text-align: center; font-weight: bold; padding-top: 50px;">
                             ДОБАВИТЬ НОВОГО ПОЛЬЗОВАТЕЛЯ
-                            <br>
-                            <b style="color: red;">(пока что не работает)</b>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
                             <input type="text" name="userNew" value="NEW" readonly
-                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
                         <td style="font-weight: bold">
-                            <input type="text", name="userNEWname" placeholder="Имя пользователя">
+                            <input type="text" name="usernameNEW" placeholder="Введите имя пользователя">
                         </td>
                         <td>
                             <select name="roleNEW">
@@ -84,7 +82,7 @@
                             </select>
                         </td>
                         <td>
-                            <input type="password" name="passwordNew" placeholder="Новый пароль" style="width: 80%;">
+                            <input type="password" name="passwordNew" autocomplete="new-password" placeholder="Введите пароль" style="width: 80%;">
                             <br>
                             Если оставить поле пустым, пароль по умолчанию будет passw0rd.
                         </td>
@@ -110,13 +108,13 @@
                     <tr>
                         <td>
                             <input type="number" name="pcid{{$product_categories.Cat_id}}" value="{{$product_categories.Cat_id}}" readonly
-                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
                         <td style="font-weight: bold">
-                            <input type="text", name="pc{{$product_categories.Cat_id}}name" placeholder="Название категории" value="{{$product_categories.Cat_name}}">
+                            <input type="text", name="pcname{{$product_categories.Cat_id}}" placeholder="Название категории" value="{{$product_categories.Cat_name}}">
                         </td>
                         <td>
-                            <textarea style="field-sizing: content; width: 400px;", name="pc{{$product_categories.Cat_id}}description" placeholder="Описание категории">{{$product_categories.Cat_description}}</textarea>
+                            <textarea style="field-sizing: content; width: 400px;", name="pcdescription{{$product_categories.Cat_id}}" placeholder="Описание категории">{{$product_categories.Cat_description}}</textarea>
                         </td>
                         <td><button value="product_category{{$product_categories.Cat_id}}" name="changeProductCategory">Обновить</button></td>
                     </tr>
@@ -133,13 +131,13 @@
                     <tr>
                         <td>
                             <input type="text" name="pcidNew" value="NEW" readonly
-                        style="max-width: 50px; border: none; outline: none; -moz-appearance: textfield; text-align: center;">
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
                         <td style="font-weight: bold">
-                            <input type="text", name="pcNEWname" placeholder="Название категории">
+                            <input type="text", name="pcnameNEW" placeholder="Название категории">
                         </td>
                         <td>
-                            <textarea style="field-sizing: content; width: 400px;", name="pcNEWdescription" placeholder="Описание категории"></textarea>
+                            <textarea style="field-sizing: content; width: 400px;", name="pcdescriptionNEW" placeholder="Описание категории"></textarea>
                         </td>
                         <td><button value="product_categoryNEW" name="changeProductCategory">Добавить</button></td>
                     </tr>

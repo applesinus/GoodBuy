@@ -24,7 +24,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
@@ -64,7 +64,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 		"receipts": rcps,
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_main.html")
+	t, err := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_main.html")
 	t.Execute(w, data)
 	if err != nil {
 		println(err.Error())
@@ -81,7 +81,7 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
@@ -136,7 +136,7 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 		"pds":   pds,
 	}
 
-	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_new.html")
+	t, err := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_new.html")
 	t.Execute(w, data)
 	if err != nil {
 		println(err.Error())

@@ -19,7 +19,7 @@ func products(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
@@ -77,7 +77,7 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
@@ -131,7 +131,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRoleOfUser(currentUser)
+	currentRole := db.GetRolenameOfUsername(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
