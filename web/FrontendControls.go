@@ -12,7 +12,7 @@ var reURL string
 func blocks(user string) string {
 
 	var role_blocks string
-	switch db.GetRolenameOfUsername(user) {
+	switch db.GetRolenameOfUserByName(user) {
 	case "Admin":
 		role_blocks = "blocks_admin.html"
 	case "Salesman":

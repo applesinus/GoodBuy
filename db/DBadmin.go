@@ -50,7 +50,7 @@ func GetUsers() []User {
 	rows.Close()
 
 	for _, usr := range tmp_users {
-		user := User{usr.Id, GetRoleById(usr.Role_id), usr.Username}
+		user := User{usr.Id, GetRolenameByID(usr.Role_id), usr.Username}
 		all_users = append(all_users, user)
 	}
 
@@ -116,12 +116,24 @@ func GetRoles() []Role {
 	return roles
 }
 
-func GetRolenameOfUsername(username string) string {
+func GetRolenameOfUserByName(username string) string {
 	role := "error"
 	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id = (select role_id from goodbuy.users where username=$1)", username).Scan(&role)
 	if err != nil {
 		println(err.Error())
 	}
+	return role
+}
+
+func GetRolenameOfUserById(id uint8) string {
+	var role string
+
+	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id=$1", id).Scan(&role)
+	if err != nil {
+		println("Something on 76", err.Error())
+		return "Unknown"
+	}
+
 	return role
 }
 
@@ -131,18 +143,6 @@ func GetRolenameByID(roleID uint8) string {
 	if err != nil {
 		println(err.Error())
 	}
-	return role
-}
-
-func GetRoleById(id uint8) string {
-	var role string
-
-	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id=$1", id).Scan(&role)
-	if err != nil {
-		println("Something on 76", err.Error())
-		return "Unknown"
-	}
-
 	return role
 }
 

@@ -36,7 +36,7 @@ func stats(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRolenameOfUsername(currentUser)
+	currentRole := db.GetRolenameOfUserByName(currentUser)
 	if currentRole != "Admin" && currentRole != "Analyst" {
 		role_blocks := blocks(currentUser)
 

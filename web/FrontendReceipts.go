@@ -24,7 +24,7 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRolenameOfUsername(currentUser)
+	currentRole := db.GetRolenameOfUserByName(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
@@ -81,7 +81,7 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRolenameOfUsername(currentUser)
+	currentRole := db.GetRolenameOfUserByName(currentUser)
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 

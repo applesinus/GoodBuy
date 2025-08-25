@@ -1,4 +1,6 @@
 {{define "content"}}
+
+
 <style>
     td, th {
         padding: 5px;
@@ -16,13 +18,15 @@
     <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
         <button value="new" name="general" onclick="window.location.href='#users'">Пользователи</button>
         <button value="new" name="general" onclick="window.location.href='#product_categories'">Категории товаров</button>
-        <button value="new" name="general" onclick="window.location.href='#markets'">Добавить маркет</button>
+        <button value="new" name="general" onclick="window.location.href='#markets'">Точки продаж</button>
         <button value="new" name="general" onclick="window.location.href='#sql'">Выполнить SQL запрос</button>
     </div>
 
-    <div id="users">
+    <div id="users" style="width: 100%">
         <form method="post" action="" autocomplete="off">
-            <h2 style="text-align: center; margin-top: 120px;">Пользователи</h2>
+            <hr style="margin-top: 120px; width: 100%">
+            <h2 style="text-align: center; width: 100%">Пользователи</h2>
+
             <table style="border-collapse: collapse; width: 100%;">
                 <tbody>
                     <tr>
@@ -30,6 +34,7 @@
                         <th>Имя</th>
                         <th>Роль</th>
                         <th>Пароль</th>
+                        <th></th>
                         <th></th>
                     </tr>
 
@@ -41,7 +46,7 @@
                         </td>
                         <td style="font-weight: bold">{{$users.Name}}</td>
                         <td>
-                            <select name="role{{$users.Id}}">
+                            <select name="role{{$users.Id}}" {{if eq "Admin" $users.Role}} disabled {{end}}>
                                 {{range $roles := $.roles}}
                                 <option value="{{$roles.Id}}" {{if eq $roles.Name $users.Role}} selected="selected" {{end}}>{{$roles.Name}}</option>
                                 {{end}}
@@ -57,11 +62,17 @@
                             </details>
                         </td>
                         <td><button value="user{{$users.Id}}" name="changeUser">Обновить</button></td>
+                        <td style="min-width: 80px;">
+                            <details>
+                                <summary>Удалить</summary>
+                                <button value="user{{$users.Id}}" name="deleteUser" style="color: red;">Подтвердить</button>
+                            </details>
+                        </td>
                     </tr>
                     {{end}}
 
                     <tr>
-                        <td colspan="5" style="text-align: center; font-weight: bold; padding-top: 50px;">
+                        <td colspan="6" style="text-align: center; font-weight: bold; padding-top: 50px;">
                             ДОБАВИТЬ НОВОГО ПОЛЬЗОВАТЕЛЯ
                         </td>
                     </tr>
@@ -86,16 +97,18 @@
                             <br>
                             Если оставить поле пустым, пароль по умолчанию будет passw0rd.
                         </td>
-                        <td><button value="userNEW" name="changeUser">Добавить</button></td>
+                        <td colspan="2"><button value="userNEW" name="changeUser">Добавить</button></td>
                     </tr>
                 </tbody>
             </table>
         </form>
     </div>
 
-    <div id="product_categories">
+    <div id="product_categories" style="width: 100%;">
         <form method="post" action="">
-            <h2 style="text-align: center; margin-top: 120px;">Категории товаров</h2>
+            <hr style="margin-top: 120px; width: 100%">
+            <h2 style="text-align: center; width: 100%">Категории товаров</h2>
+
             <table style="border-collapse: collapse;">
                 <tbody>
                     <tr>
@@ -123,8 +136,6 @@
                     <tr>
                         <td colspan="4" style="text-align: center; font-weight: bold; padding-top: 50px;">
                             ДОБАВИТЬ НОВУЮ КАТЕГОРИЮ
-                            <br>
-                            <b style="color: red;">(пока что не работает)</b>
                         </td>
                     </tr>
 
@@ -146,37 +157,66 @@
         </form>
     </div>
 
-    <div id="markets">
+    <div id="markets" style="width: 100%;">
         <form method="post" action="">
-            <h2 style="text-align: center; margin-top: 120px;">Добавить маркет</h2>
-            <table style="border-collapse: collapse;">
-                <p style="text-align: center;">
-                    Название маркета:
-                    <br>
-                    <input type="text" name="market" placeholder="Название маркета" style="max-width: 200px; text-align: center;">
-                </p>
-                <p style="text-align: center;">
-                    Даты проведения:
-                    <br>
-                    <input type="date" name="date_start" value="2000-01-01" style="max-width: 100px; text-align: center;">
-                    -
-                    <input type="date" name="date_end" value="2000-01-01" style="max-width: 100px; text-align: center;">
-                </p>
-                <p style="text-align: center;">
-                    Стоимость участия:
-                    <br>
-                    <input type="number" step="0.01" name="fee" value="0.00" placeholder="Стоимость" style="max-width: 75px; text-align: center;">
-                </p>
-                <p style="text-align: center;">
-                    <input type="submit" name="add_market" value="Добавить">
-                </p>
+            <hr style="margin-top: 120px; width: 100%">
+            <h2 style="text-align: center; width: 100%">Точки продаж</h2>
+            <p style="text-align: center;"><b style="color: red;">(пока что не работает)</b></p>
+
+            <table style="border-collapse: collapse; width: 100%;"> 
+                <tbody>
+                    <tr>
+                        <th>id</th>
+                        <th>Название</th>
+                        <th>Даты работы</th>
+                        <th>Расходы</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {{range $markets := .markets}}
+                    <tr>
+                        <td>
+                            <input type="number" name="marketid{{$markets.Id}}" value="{{$markets.Id}}" readonly
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
+                        </td>
+                        
+                    </tr>
+                    {{end}}
+
+                    <tr>
+                        <td colspan="5" style="text-align: center; font-weight: bold; padding-top: 50px;">
+                            ДОБАВИТЬ НОВУЮ ТОЧКУ ПРОДАЖ
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <input type="text" name="marketidNew" value="NEW" readonly
+                        style="max-width: 50px; border: none; outline: none; text-align: center;">
+                        </td>
+                        <td style="font-weight: bold">
+                            <input type="text", name="marketnameNEW" placeholder="Название точки" style="text-align: center;">
+                        </td>
+                        <td>
+                            <input type="date" name="marketdatestart" value="2000-01-01" style="max-width: 100px; text-align: center;">
+                            -
+                            <input type="date" name="marketdateend" value="2000-01-01" style="max-width: 100px; text-align: center;">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="marketfee" value="0.00" style="max-width: 75px; text-align: center;">
+                        </td>
+                        <td><button value="marketNEW" name="changeMarket">Добавить</button></td>
+                    </tr>
+                </tbody>
             </table>
         </form>
     </div>
 
-    <div id="sql">
+    <div id="sql" style="width: 100%;">
         <form method="post" action="">
-            <h2 style="text-align: center; margin-top: 120px;">Выполнить SQL запрос к базе данных</h2>
+            <hr style="margin-top: 120px; width: 100%">
+            <h2 style="text-align: center; width: 100%">Выполнить SQL запрос к базе данных</h2>
+
             <p style="text-align: center">
                 Опасное действие, которое может привести к непредсказуемым результатам.
                 <br>
@@ -192,5 +232,11 @@
             </div>
         </form>
     </div>
-</form>
+
+    {{if ne .alertmessage ""}}
+        <script type="text/javascript">
+            window.onload = function(){alert("{{.alertmessage}}");}
+        </script>
+    {{end}}
+
 {{end}}

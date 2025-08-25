@@ -19,7 +19,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	user, _ := r.Cookie("currentUser")
 	currentUser := user.Value
 
-	currentRole := db.GetRolenameOfUsername(currentUser)
+	currentRole := db.GetRolenameOfUserByName(currentUser)
 	if currentRole != "Admin" {
 		role_blocks := blocks(currentUser)
 
@@ -36,6 +36,8 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	postalert := ""
+
 	if r.Method == http.MethodPost {
 		if targetUser := r.PostFormValue("changeUser"); targetUser != "" {
 			targetUser = strings.TrimPrefix(targetUser, "user")
@@ -44,8 +46,11 @@ func admin(w http.ResponseWriter, r *http.Request) {
 
 			if strings.ToLower(targetUser) != "new" {
 				user, _ := strconv.Atoi(targetUser)
+				currentRole := db.GetRolenameOfUserById(uint8(user))
 
-				if db.GetRolenameByID(uint8(role)) != db.GetRolenameOfUsername(targetUser) {
+				if strings.Contains(strings.ToLower(currentRole), "admin") {
+					postalert += "Нельзя изменять роль администратора через визуальный интерфейс.\n"
+				} else if currentRole != db.GetRolenameByID(uint8(role)) {
 					db.GrantRoleToUser(uint8(user), role)
 				}
 
@@ -94,6 +99,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		"users":              db.GetUsers(),
 		"roles":              db.GetRoles(),
 		"product_categories": db.GetCategories(),
+		"alertmessage":       postalert,
 	}
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendAdmin_main.html")
