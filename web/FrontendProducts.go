@@ -1,6 +1,7 @@
 package web
 
 import (
+	"GoodBuy/constants"
 	"GoodBuy/db"
 	"fmt"
 	"html/template"
@@ -23,9 +24,10 @@ func products(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Товары",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Товары",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -54,10 +56,11 @@ func products(w http.ResponseWriter, r *http.Request) {
 	pd := db.NewProduct()
 	pds := db.GetProducts(pd, pd)
 
-	data := map[string]interface{}{
-		"title": "Товары",
-		"user":  currentUser,
-		"pds":   pds,
+	data := map[string]any{
+		"title":        "Товары",
+		"user":         currentUser,
+		"pds":          pds,
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_main.html")
@@ -81,9 +84,10 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Добавить товар",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Добавить товар",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -108,11 +112,12 @@ func products_new(w http.ResponseWriter, r *http.Request) {
 	categories := db.GetCategories()
 	role_blocks := blocks(currentUser)
 
-	data := map[string]interface{}{
-		"title":      "Добавить товар",
-		"user":       currentUser,
-		"categories": categories,
-		"alert":      "",
+	data := map[string]any{
+		"title":        "Добавить товар",
+		"user":         currentUser,
+		"categories":   categories,
+		"alert":        "",
+		"current_year": constants.CURRENT_YEAR(),
 	}
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_new.html")
 	err = t.Execute(w, data)
@@ -135,9 +140,10 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Изменить товар",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Изменить товар",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -180,7 +186,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 	categories := db.GetCategories()
 	role_blocks := blocks(currentUser)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"title":        "Изменить товар",
 		"user":         currentUser,
 		"categories":   categories,
@@ -191,6 +197,7 @@ func products_edit(w http.ResponseWriter, r *http.Request) {
 		"Default_cost": product.Default_cost,
 		"Category":     product.Category,
 		"alert":        "",
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendProducts_edit.html")

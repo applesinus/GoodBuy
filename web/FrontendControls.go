@@ -1,6 +1,7 @@
 package web
 
 import (
+	"GoodBuy/constants"
 	"GoodBuy/db"
 	"GoodBuy/security"
 	"html/template"
@@ -60,9 +61,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := map[string]string{
-		"title": "Вход",
-		"user":  "",
+	data := map[string]any{
+		"title":        "Вход",
+		"user":         "",
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	role_blocks := blocks("")
@@ -102,7 +104,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 			}
 			http.SetCookie(w, cookie)
 
-			db.RegisterUser(login, security.Hash(password))
+			db.RegisterUser(0, login, security.Hash(password))
 
 			t, _ := template.ParseFiles("web/redirect.html")
 			t.Execute(w, "/")
@@ -110,8 +112,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	data := map[string]string{
-		"title": "Регистрация",
+	data := map[string]any{
+		"title":        "Регистрация",
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	role_blocks := blocks("")

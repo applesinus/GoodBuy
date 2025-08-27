@@ -1,6 +1,7 @@
 package web
 
 import (
+	"GoodBuy/constants"
 	"GoodBuy/db"
 	"html/template"
 	"net/http"
@@ -28,9 +29,10 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Продажи",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Продажи",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -58,10 +60,11 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 		rcps[i] = rcp
 	}
 
-	data := map[string]interface{}{
-		"title":    "Продажи",
-		"user":     currentUser,
-		"receipts": rcps,
+	data := map[string]any{
+		"title":        "Продажи",
+		"user":         currentUser,
+		"receipts":     rcps,
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	t, err := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_main.html")
@@ -85,9 +88,10 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Salesman" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Оформление продажи",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Оформление продажи",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -129,11 +133,12 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 	var date date_str
 	date.Y, date.M, date.D = time.Now().Date()
 
-	data := map[string]interface{}{
-		"title": "Оформление продажи",
-		"user":  currentUser,
-		"Date":  date,
-		"pds":   pds,
+	data := map[string]any{
+		"title":        "Оформление продажи",
+		"user":         currentUser,
+		"Date":         date,
+		"pds":          pds,
+		"current_year": constants.CURRENT_YEAR(),
 	}
 
 	t, err := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendReceipts_new.html")

@@ -1,8 +1,12 @@
 package db
 
 import (
+	"GoodBuy/constants"
+	"GoodBuy/security"
 	"context"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -25,13 +29,36 @@ func execute_file(file_name string) {
 	}
 }
 
+func retry(iter int) {
+	print("RETRY " + strconv.Itoa(iter))
+	time.Sleep(time.Second)
+	print(".")
+	time.Sleep(time.Second)
+	print(".")
+	time.Sleep(time.Second)
+	print(".")
+	time.Sleep(time.Second)
+	print(".")
+	time.Sleep(time.Second)
+	println(".")
+}
+
 func StartDB() {
 	var err error
 
-	conn, connection_err = pgx.Connect(context.Background(), "postgres://user:passw0rd@localhost:"+psql_port)
+	conn, connection_err = pgx.Connect(context.Background(), "postgres://user:"+constants.DEFAULT_DB_PASSWORD()+"@localhost:"+psql_port)
 	if connection_err != nil {
 		println("DB CONNECTION IS FAILED")
-		panic(connection_err)
+
+		for i := 0; i < 5 && connection_err != nil; i++ {
+			retry(i + 1)
+			conn, connection_err = pgx.Connect(context.Background(), "postgres://user:"+constants.DEFAULT_DB_PASSWORD()+"@localhost:"+psql_port)
+		}
+
+		if connection_err != nil {
+			println("DB CONNECTION STILL FAILED")
+			panic(connection_err)
+		}
 	}
 
 	// test if the DB exist or corrupted. if this is the case for now it fully remakes (!not recover!) the DB
@@ -49,27 +76,31 @@ func StartDB() {
 
 func CreateDB() {
 	execute_file("db/CreateDB.sql")
+	RegisterUser(1, "Administrator", security.Hash(constants.DEFAULT_PASSWORD()))
+
 	println("DB created")
 }
 
 func DropDB() {
 	execute_file("db/DropDB.sql")
+
 	println("DB dropped")
 }
 
 func AddTestData() {
 	execute_file("db/TestData.sql")
+
 	println("Test data added")
 }
 
 func Auth(inputed_username, inputed_password string) bool {
 	id := -1
-	err := conn.QueryRow(context.Background(), "select id from goodbuy.users where username=$1", inputed_username).Scan(&id)
+	err := conn.QueryRow(context.Background(), "select id from goodbuy.users where isDeleted=false and username=$1", inputed_username).Scan(&id)
 	if err != nil {
 		return false
 	} else {
 		password := ""
-		err := conn.QueryRow(context.Background(), "select password from goodbuy.users where id=$1", id).Scan(&password)
+		err := conn.QueryRow(context.Background(), "select password from goodbuy.users where isDeleted=false and id=$1", id).Scan(&password)
 		if err != nil {
 			return false
 		} else {

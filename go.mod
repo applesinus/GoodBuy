@@ -2,7 +2,10 @@ module GoodBuy
 
 go 1.21.1
 
-require github.com/jackc/pgx/v4 v4.18.1
+require (
+	github.com/jackc/pgx/v4 v4.18.1
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

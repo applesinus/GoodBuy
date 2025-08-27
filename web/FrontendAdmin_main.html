@@ -62,11 +62,13 @@
                             </details>
                         </td>
                         <td><button value="user{{$users.Id}}" name="changeUser">Обновить</button></td>
-                        <td style="min-width: 80px;">
-                            <details>
-                                <summary>Удалить</summary>
-                                <button value="user{{$users.Id}}" name="deleteUser" style="color: red;">Подтвердить</button>
-                            </details>
+                        <td style="min-width: 100px;">
+                            {{if ne "Admin" $users.Role}}
+                                <details>
+                                    <summary>Удалить</summary>
+                                    <button value="user{{$users.Id}}" name="deleteUser" style="color: red;">Подтвердить</button>
+                                </details>
+                            {{end}}
                         </td>
                     </tr>
                     {{end}}
@@ -92,10 +94,10 @@
                                 {{end}}
                             </select>
                         </td>
-                        <td>
-                            <input type="password" name="passwordNew" autocomplete="new-password" placeholder="Введите пароль" style="width: 80%;">
+                        <td style="min-width: 100px;">
+                            <input type="password" name="passwordNEW" autocomplete="new-password" placeholder="Введите пароль" style="width: 80%;">
                             <br>
-                            Если оставить поле пустым, пароль по умолчанию будет passw0rd.
+                            Если оставить поле пустым, пароль по умолчанию будет "{{.DEFAULT_PASSWORD}}".
                         </td>
                         <td colspan="2"><button value="userNEW" name="changeUser">Добавить</button></td>
                     </tr>
@@ -127,7 +129,7 @@
                             <input type="text", name="pcname{{$product_categories.Cat_id}}" placeholder="Название категории" value="{{$product_categories.Cat_name}}">
                         </td>
                         <td>
-                            <textarea style="field-sizing: content; width: 400px;", name="pcdescription{{$product_categories.Cat_id}}" placeholder="Описание категории">{{$product_categories.Cat_description}}</textarea>
+                            <textarea style="field-sizing: content; width: 400px; height: 30px;", name="pcdescription{{$product_categories.Cat_id}}" placeholder="Описание категории">{{$product_categories.Cat_description}}</textarea>
                         </td>
                         <td><button value="product_category{{$product_categories.Cat_id}}" name="changeProductCategory">Обновить</button></td>
                     </tr>
@@ -148,7 +150,7 @@
                             <input type="text", name="pcnameNEW" placeholder="Название категории">
                         </td>
                         <td>
-                            <textarea style="field-sizing: content; width: 400px;", name="pcdescriptionNEW" placeholder="Описание категории"></textarea>
+                            <textarea style="field-sizing: content; width: 400px; height: 30px;", name="pcdescriptionNEW" placeholder="Описание категории"></textarea>
                         </td>
                         <td><button value="product_categoryNEW" name="changeProductCategory">Добавить</button></td>
                     </tr>

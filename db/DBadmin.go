@@ -26,7 +26,7 @@ func GetUsers() []User {
 	tmp_users := make([]temp_user, 0)
 	all_users := make([]User, 0)
 
-	rows, err := conn.Query(context.Background(), "select * from goodbuy.users order by id")
+	rows, err := conn.Query(context.Background(), "select role_id, username, id from goodbuy.users where isDeleted=false order by id")
 	if err != nil {
 		println(err.Error())
 		return all_users
@@ -37,7 +37,6 @@ func GetUsers() []User {
 		err = rows.Scan(
 			&usr.Role_id,
 			&usr.Username,
-			&usr.Password,
 			&usr.Id,
 		)
 		if err != nil {
@@ -57,10 +56,20 @@ func GetUsers() []User {
 	return all_users
 }
 
+func IsUserExistByID(userID uint8) bool {
+	username := GetUsernameById(userID)
+
+	if username != "unknown" {
+		return IsUserExist(username)
+	}
+
+	return false
+}
+
 func IsUserExist(username string) bool {
 	exist := false
 
-	rows, err := conn.Query(context.Background(), "select id from goodbuy.users where username=$1", username)
+	rows, err := conn.Query(context.Background(), "select id from goodbuy.users where isDeleted=false and username=$1", username)
 	if err != nil {
 		println("Error on getting user", err.Error())
 		return exist
@@ -79,8 +88,15 @@ func NewUser() User {
 	return User{0, "Unknown", "NotUser"}
 }
 
-func RegisterUser(username, password string) {
-	_, err := conn.Exec(context.Background(), "insert into goodbuy.users values (2, $1, $2);", username, password)
+func RegisterUser(roleID uint8, username, password string) {
+	_, err := conn.Exec(context.Background(), "insert into goodbuy.users values ($1, $2, $3);", roleID, username, password)
+	if err != nil {
+		println(err.Error())
+	}
+}
+
+func DisableUserByID(userID uint8) {
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set isDeleted=true where id=$1", userID)
 	if err != nil {
 		println(err.Error())
 	}
@@ -89,7 +105,7 @@ func RegisterUser(username, password string) {
 func GetUsernameById(id uint8) string {
 	var name string
 
-	err := conn.QueryRow(context.Background(), "select username from goodbuy.users where id=$1", id).Scan(&name)
+	err := conn.QueryRow(context.Background(), "select username from goodbuy.users where isDeleted=false and id=$1", id).Scan(&name)
 	if err != nil {
 		println("Something on 67", err.Error())
 		return "Unknown"
@@ -118,7 +134,7 @@ func GetRoles() []Role {
 
 func GetRolenameOfUserByName(username string) string {
 	role := "error"
-	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id = (select role_id from goodbuy.users where username=$1)", username).Scan(&role)
+	err := conn.QueryRow(context.Background(), "select name from goodbuy.roles where id = (select role_id from goodbuy.users where isDeleted=false and username=$1)", username).Scan(&role)
 	if err != nil {
 		println(err.Error())
 	}
@@ -159,14 +175,14 @@ func GetIdOfRole(role string) uint8 {
 }
 
 func GrantRoleToUser(userID uint8, role_id int) {
-	_, err := conn.Exec(context.Background(), "update goodbuy.users set role_id=$1 where id=$2", role_id, userID)
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set role_id=$1 where isDeleted=false and id=$2", role_id, userID)
 	if err != nil {
 		println("Failed to grant the role.", err.Error())
 	}
 }
 
 func ChangeUserPassword(userID uint8, password string) {
-	_, err := conn.Exec(context.Background(), "update goodbuy.users set password=$1 where id=$2", password, userID)
+	_, err := conn.Exec(context.Background(), "update goodbuy.users set password=$1 where isDeleted=false and id=$2", password, userID)
 	if err != nil {
 		println("Failed to change the password.", err.Error())
 	}

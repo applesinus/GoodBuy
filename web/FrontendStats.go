@@ -1,6 +1,7 @@
 package web
 
 import (
+	"GoodBuy/constants"
 	"GoodBuy/db"
 	"html/template"
 	"net/http"
@@ -40,9 +41,10 @@ func stats(w http.ResponseWriter, r *http.Request) {
 	if currentRole != "Admin" && currentRole != "Analyst" {
 		role_blocks := blocks(currentUser)
 
-		data := map[string]interface{}{
-			"title": "Статистика",
-			"user":  currentUser,
+		data := map[string]any{
+			"title":        "Статистика",
+			"user":         currentUser,
+			"current_year": constants.CURRENT_YEAR(),
 		}
 
 		t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/forbidden.html")
@@ -123,7 +125,7 @@ func stats(w http.ResponseWriter, r *http.Request) {
 
 	users := db.GetUsers()
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"title":             "Статистика",
 		"user":              currentUser,
 		"users":             users,
@@ -138,6 +140,7 @@ func stats(w http.ResponseWriter, r *http.Request) {
 		"profit":            profit,
 		"mode_on_markets_n": mode_on_markets_n,
 		"mode_on_markets":   mode_on_markets,
+		"current_year":      constants.CURRENT_YEAR(),
 	}
 
 	t, _ := template.ParseFiles("web/template.html", "web/"+role_blocks, "web/FrontendStats_main.html")

@@ -3,7 +3,7 @@ services:
     image: postgres
     container_name: goodbuy_postgres
     environment:
-      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_PASSWORD: ${DEFAULT_DB_PASSWORD}
       POSTGRES_USER: user
       POSTGRES_DB: postgres
     ports:

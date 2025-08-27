@@ -93,9 +93,9 @@ create table goodbuy.users (
     username varchar unique not null,
     password varchar not null,
     id serial primary key,
+    isDeleted boolean default false,
     foreign key (role_id) references goodbuy.roles (id) on delete cascade
 );
-insert into goodbuy.users values (1, 'Administrator', 'd41e98d1eafa6d6011d3a70f1a5b92f0');
 
 
 
