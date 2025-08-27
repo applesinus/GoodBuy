@@ -55,11 +55,6 @@ func receipts(w http.ResponseWriter, r *http.Request) {
 
 	rcps := db.GetAllReceipts()
 
-	for i, rcp := range rcps {
-		rcp.Pos_len++
-		rcps[i] = rcp
-	}
-
 	data := map[string]any{
 		"title":        "Продажи",
 		"user":         currentUser,
@@ -109,8 +104,14 @@ func receipts_new(w http.ResponseWriter, r *http.Request) {
 
 		for {
 			if r.PostFormValue("product"+strconv.Itoa(i)) != "" {
+				if count, _ := strconv.ParseUint(r.PostFormValue("count"+strconv.Itoa(i)), 10, 8); count < 1 {
+					i++
+					continue
+				}
+
 				position := db.NewPosition()
-				position.Product = r.PostFormValue("product" + strconv.Itoa(i))
+				pid, _ := strconv.Atoi(r.PostFormValue("product" + strconv.Itoa(i)))
+				position.Product = db.GetProductByID(pid).Name
 				cost, _ := strconv.ParseFloat(r.PostFormValue("cost"+strconv.Itoa(i)), 64)
 				position.Cost = float32(cost)
 				count, _ := strconv.ParseUint(r.PostFormValue("count"+strconv.Itoa(i)), 10, 8)

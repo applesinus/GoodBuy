@@ -83,7 +83,9 @@ func AddNewReceipt(receipt Receipt) {
 	var rec_id int
 	conn.QueryRow(context.Background(), "select * from goodbuy.new_receipt()").Scan(&rec_id)
 	for _, pos := range receipt.Positions {
-		println(rec_id, pos.Product, pos.Cost, int(pos.Count))
-		conn.Exec(context.Background(), "call goodbuy.new_position($1, $2, $3, $4)", rec_id, pos.Product, pos.Cost, int(pos.Count))
+		_, err := conn.Exec(context.Background(), "call goodbuy.new_position($1, $2, $3, $4)", rec_id, pos.Product, pos.Cost, int(pos.Count))
+		if err != nil {
+			println(err.Error())
+		}
 	}
 }
