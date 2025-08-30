@@ -41,6 +41,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	postalert := ""
+	sqlResponse := ""
 
 	if r.Method == http.MethodPost {
 		if targetUser := r.PostFormValue("changeUser"); targetUser != "" {
@@ -108,6 +109,17 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			fee, _ := strconv.ParseFloat(r.PostFormValue("fee"), 64)
 			db.AddMarket(r.PostFormValue("market"), r.PostFormValue("date_start"), r.PostFormValue("date_end"), fee)
 		}
+
+		if r.PostFormValue("run_sql") != "" {
+			query := r.PostFormValue("sql_query")
+			println(query)
+
+			if strings.HasPrefix(strings.ToLower(query), "select") {
+				sqlResponse += "<p style=\"font-weight: bold; text-align: center; width: 100%;\">SQL запрос: " + query + "</p>" + db.RunSqlSelect(query)
+			}
+
+			println(postalert)
+		}
 	}
 
 	role_blocks := blocks(currentUser)
@@ -119,6 +131,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		"roles":              db.GetRoles(),
 		"product_categories": db.GetCategories(),
 		"alertmessage":       postalert,
+		"sqlResponse":        template.HTML(sqlResponse),
 
 		"current_year":     constants.CURRENT_YEAR(),
 		"DEFAULT_PASSWORD": constants.DEFAULT_PASSWORD(),

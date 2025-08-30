@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/joho/godotenv v1.5.1
+	github.com/pganalyze/pg_query_go/v5 v5.1.0
 )
 
 require (
@@ -19,4 +20,5 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 )

@@ -224,9 +224,11 @@
                 <br>
                 Проконсультируйтесь с ответственным лицом перед выполнением запроса.
                 <br>
-                <b style="color: red;">(пока что не работает)</b>
             </p>
-            
+
+            {{if ne .sqlResponse ""}}
+                {{.sqlResponse}}
+            {{end}}
 
             <div style="align-items: center; justify-content: space-evenly; width: 100%; display: flex;">
                 <input type="text" name="sql_query" placeholder="Введите SQL запрос" style="width: 75%; text-align: center;">

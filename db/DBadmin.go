@@ -2,6 +2,10 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"strings"
+
+	pgquery "github.com/pganalyze/pg_query_go/v5"
 )
 
 type temp_user struct {
@@ -193,4 +197,80 @@ func AddMarket(name string, date_start, date_end string, fee float64) {
 	if err != nil {
 		println("Failed to add the market.", err.Error())
 	}
+}
+
+func RunSqlSelect(query string) string {
+	builder := new(strings.Builder)
+	rows, err := conn.Query(context.Background(), query)
+
+	if err != nil {
+		builder.WriteString("<p style=\"font-weight: bold; text-align: center; width: 100%;\">ОШИБКА: " + err.Error() + "</p>")
+	} else if notSafe := isSafe(query); notSafe != "" {
+		builder.WriteString("<p style=\"font-weight: bold; text-align: center; width: 100%;\">ОПАСНО: " + notSafe + "</p>")
+	} else {
+		builder.WriteString("<p style=\"font-weight: bold; text-align: center; width: 100%;\">РЕЗУЛЬТАТ:</p>")
+
+		builder.WriteString("<table style=\"text-align: center; width: 100%;\">")
+
+		builder.WriteString("<thead> <tr>")
+		descriptions := rows.FieldDescriptions()
+		for _, desc := range descriptions {
+			builder.WriteString("<th>")
+			builder.Write(desc.Name)
+			builder.WriteString("</th>")
+		}
+		builder.WriteString("</tr> </thead>")
+
+		builder.WriteString("<tbody>")
+		for rows.Next() {
+			columnValues, _ := rows.Values()
+
+			builder.WriteString("<tr>")
+			for _, value := range columnValues {
+				builder.WriteString("<td>")
+				builder.WriteString(fmt.Sprint(value))
+				builder.WriteString("</td>")
+			}
+			builder.WriteString("</tr>")
+		}
+		rows.Close()
+		builder.WriteString("</tbody>")
+
+		builder.WriteString("</table>")
+	}
+
+	return builder.String()
+}
+
+func isSafe(query string) string {
+	tree, err := pgquery.Parse(query)
+	if err != nil {
+		return fmt.Sprintf("Синтаксическая ошибка в запросе: %v", err)
+	}
+
+	for _, stmt := range tree.GetStmts() {
+		node := stmt.GetStmt()
+
+		if node.GetDropStmt() != nil {
+			return "Операция DROP запрещена. Она безвозвратно удаляет объекты базы данных."
+		}
+
+		if node.GetTruncateStmt() != nil {
+			return "Операция TRUNCATE запрещена. Она немедленно удаляет все данные из таблицы."
+		}
+
+		if deleteStmt := node.GetDeleteStmt(); deleteStmt != nil {
+			if deleteStmt.GetWhereClause() == nil {
+				return "Операция DELETE без условия WHERE запрещена. Это приведет к удалению ВСЕХ строк."
+			}
+		}
+
+		if updateStmt := node.GetUpdateStmt(); updateStmt != nil {
+			if updateStmt.GetWhereClause() == nil {
+				return "Операция UPDATE без условия WHERE запрещена. Это приведет к обновлению ВСЕХ строк."
+			}
+		}
+	}
+
+	return ""
 }
