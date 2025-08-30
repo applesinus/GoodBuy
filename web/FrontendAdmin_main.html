@@ -243,4 +243,21 @@
         </script>
     {{end}}
 
+    {{if ne .paragraph ""}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const paragraphId = '{{.paragraph}}';
+                const element = document.getElementById(paragraphId);
+                
+                if (element) {
+                    element.scrollIntoView({ block: 'start' });
+
+                    const newUrl = '#' + paragraphId;
+                    history.replaceState(null, '', newUrl);
+                }
+            });
+        </script>
+    {{end}}
+    
+
 {{end}}

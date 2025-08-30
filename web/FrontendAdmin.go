@@ -42,9 +42,12 @@ func admin(w http.ResponseWriter, r *http.Request) {
 
 	postalert := ""
 	sqlResponse := ""
+	paragraph := ""
 
 	if r.Method == http.MethodPost {
 		if targetUser := r.PostFormValue("changeUser"); targetUser != "" {
+			paragraph = "users"
+
 			targetUser = strings.TrimPrefix(targetUser, "user")
 			role, _ := strconv.Atoi(r.PostFormValue("role" + targetUser))
 			password := r.PostFormValue("password" + targetUser)
@@ -74,6 +77,8 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if targetUser := r.PostFormValue("deleteUser"); targetUser != "" {
+			paragraph = "users"
+
 			targetUser = strings.TrimPrefix(targetUser, "user")
 			userID, err := strconv.Atoi(targetUser)
 			if err != nil {
@@ -89,6 +94,8 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if targetProductCategory := r.PostFormValue("changeProductCategory"); targetProductCategory != "" {
+			paragraph = "product_categories"
+
 			targetProductCategory = strings.TrimPrefix(targetProductCategory, "product_category")
 			name := r.PostFormValue("pcname" + targetProductCategory)
 			description := r.PostFormValue("pcdescription" + targetProductCategory)
@@ -106,11 +113,15 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if r.PostFormValue("add_market") != "" {
+			paragraph = "markets"
+
 			fee, _ := strconv.ParseFloat(r.PostFormValue("fee"), 64)
 			db.AddMarket(r.PostFormValue("market"), r.PostFormValue("date_start"), r.PostFormValue("date_end"), fee)
 		}
 
 		if r.PostFormValue("run_sql") != "" {
+			paragraph = "sql"
+
 			query := r.PostFormValue("sql_query")
 			println(query)
 
@@ -132,6 +143,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		"product_categories": db.GetCategories(),
 		"alertmessage":       postalert,
 		"sqlResponse":        template.HTML(sqlResponse),
+		"paragraph":          paragraph,
 
 		"current_year":     constants.CURRENT_YEAR(),
 		"DEFAULT_PASSWORD": constants.DEFAULT_PASSWORD(),
