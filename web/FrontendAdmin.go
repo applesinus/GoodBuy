@@ -112,11 +112,34 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if r.PostFormValue("add_market") != "" {
+		if targetMarket := r.PostFormValue("changeMarket"); targetMarket != "" {
 			paragraph = "markets"
 
-			fee, _ := strconv.ParseFloat(r.PostFormValue("fee"), 64)
-			db.AddMarket(r.PostFormValue("market"), r.PostFormValue("date_start"), r.PostFormValue("date_end"), fee)
+			targetMarket = strings.TrimPrefix(targetMarket, "market")
+			name := r.PostFormValue("marketname" + targetProductCategory)
+			dateStart := r.PostFormValue("marketdatestart" + targetMarket)
+			dateEnd := r.PostFormValue("marketdateend" + targetMarket)
+			fee := r.PostFormValue("marketfee" + targetMarket)
+
+			marketID, err := strconv.Atoi(targetMarket)
+			if err != nil && strings.ToLower(targetMarket) != "new" {
+				println("Something on getting market ID: ", err.Error())
+			}
+
+			feeValue, err := strconv.ParseFloat(fee, 64)
+			if err != nil {
+				println("Something on parsing fee: ", err.Error())
+			}
+
+			if strings.ToLower(targetMarket) = "new" {
+				db.AddMarket(name, dateStart, dateEnd, feeValue)
+			}
+			} else {
+				db.AddProductCategory(name, description)
+			}
+			name := r.PostFormValue("pcname" + targetProductCategory)
+			description := r.PostFormValue("pcdescription" + targetProductCategory)
+
 		}
 
 		if r.PostFormValue("run_sql") != "" {
@@ -141,6 +164,7 @@ func admin(w http.ResponseWriter, r *http.Request) {
 		"users":              db.GetUsers(),
 		"roles":              db.GetRoles(),
 		"product_categories": db.GetCategories(),
+		"markets":            db.GetAllMarkets(),
 		"alertmessage":       postalert,
 		"sqlResponse":        template.HTML(sqlResponse),
 		"paragraph":          paragraph,

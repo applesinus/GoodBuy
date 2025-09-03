@@ -38,8 +38,8 @@ insert into goodbuy.positions_in_receipts values
 (8, 5);
 
 insert into goodbuy.markets values
-('Супермаркет', '[2023-12-27,2023-12-27]'),
-('Гипермаркет', '[2023-12-30, 2023-12-31]');
+('Супермаркет', '[2023-12-27,2023-12-27]', 1),
+('Гипермаркет', '[2023-12-30, 2023-12-31]', 3);
 
 insert into goodbuy.receipts_on_markets values
 (1, 1),

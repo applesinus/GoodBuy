@@ -181,7 +181,18 @@
                             <input type="number" name="marketid{{$markets.Id}}" value="{{$markets.Id}}" readonly
                         style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
-                        
+                        <td style="font-weight: bold">
+                            <input type="text", name="marketname{{$markets.Id}}" value="{{$markets.Name}}" placeholder="Название точки" style="text-align: center;">
+                        </td>
+                        <td>
+                            <input type="date" name="marketdatestart{{$markets.Id}}" value="{{$markets.DateStart}}" style="max-width: 120px; text-align: center;">
+                            -
+                            <input type="date" name="marketdateend{{$markets.Id}}" value="{{$markets.DateEnd}}" style="max-width: 120px; text-align: center;">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="marketfee{{$markets.Id}}" value="{{$markets.Fee}}" style="max-width: 75px; text-align: center;">
+                        </td>
+                        <td><button value="market{{$markets.Id}}" name="changeMarket">Обновить</button></td>
                     </tr>
                     {{end}}
 
@@ -200,12 +211,12 @@
                             <input type="text", name="marketnameNEW" placeholder="Название точки" style="text-align: center;">
                         </td>
                         <td>
-                            <input type="date" name="marketdatestart" value="2000-01-01" style="max-width: 100px; text-align: center;">
+                            <input type="date" name="marketdatestartNEW" value="2000-01-01" style="max-width: 120px; text-align: center;">
                             -
-                            <input type="date" name="marketdateend" value="2000-01-01" style="max-width: 100px; text-align: center;">
+                            <input type="date" name="marketdateendNEW" value="2000-01-01" style="max-width: 120px; text-align: center;">
                         </td>
                         <td>
-                            <input type="number" step="0.01" name="marketfee" value="0.00" style="max-width: 75px; text-align: center;">
+                            <input type="number" step="0.01" name="marketfeeNEW" value="0.00" style="max-width: 75px; text-align: center;">
                         </td>
                         <td><button value="marketNEW" name="changeMarket">Добавить</button></td>
                     </tr>

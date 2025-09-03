@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgtype"
 	pgquery "github.com/pganalyze/pg_query_go/v5"
 )
 
@@ -24,6 +25,14 @@ type User struct {
 type Role struct {
 	Id   uint8
 	Name string
+}
+
+type Market struct {
+	Id        uint8
+	Name      string
+	DateStart string
+	DateEnd   string
+	Fee       float64
 }
 
 func GetUsers() []User {
@@ -197,6 +206,28 @@ func AddMarket(name string, date_start, date_end string, fee float64) {
 	if err != nil {
 		println("Failed to add the market.", err.Error())
 	}
+}
+
+func GetAllMarkets() []Market {
+	markets := make([]Market, 0)
+
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.markets")
+	if err != nil {
+		println("Error getting markets:", err.Error())
+	}
+
+	for rows.Next() {
+		var market Market
+		var dates pgtype.Daterange
+		rows.Scan(&market.Name, &dates, &market.Fee, &market.Id)
+		market.DateStart = dates.Lower.Time.Format("2006-01-02")
+		market.DateEnd = dates.Upper.Time.Format("2006-01-02")
+
+		markets = append(markets, market)
+	}
+	rows.Close()
+
+	return markets
 }
 
 func RunSqlSelect(query string) string {
