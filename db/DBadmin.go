@@ -208,10 +208,17 @@ func AddMarket(name string, date_start, date_end string, fee float64) {
 	}
 }
 
+func UpdateMarket(marketID uint8, name string, date_start, date_end string, fee float64) {
+	_, err := conn.Exec(context.Background(), "call goodbuy.update_market($1, $2, $3, $4, $5)", marketID, name, date_start, date_end, fee)
+	if err != nil {
+		println("Failed to update the market.", err.Error())
+	}
+}
+
 func GetAllMarkets() []Market {
 	markets := make([]Market, 0)
 
-	rows, err := conn.Query(context.Background(), "select * from goodbuy.markets")
+	rows, err := conn.Query(context.Background(), "select * from goodbuy.markets order by id")
 	if err != nil {
 		println("Error getting markets:", err.Error())
 	}
@@ -230,7 +237,7 @@ func GetAllMarkets() []Market {
 	return markets
 }
 
-func RunSqlSelect(query string) string {
+func RunSqlQuery(query string) string {
 	builder := new(strings.Builder)
 	rows, err := conn.Query(context.Background(), query)
 

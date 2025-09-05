@@ -116,43 +116,37 @@ func admin(w http.ResponseWriter, r *http.Request) {
 			paragraph = "markets"
 
 			targetMarket = strings.TrimPrefix(targetMarket, "market")
-			name := r.PostFormValue("marketname" + targetProductCategory)
+			name := r.PostFormValue("marketname" + targetMarket)
 			dateStart := r.PostFormValue("marketdatestart" + targetMarket)
 			dateEnd := r.PostFormValue("marketdateend" + targetMarket)
 			fee := r.PostFormValue("marketfee" + targetMarket)
+			targetMarket = strings.ToLower(targetMarket)
+
+			println("Market details:", name, "/", targetMarket, "/", dateStart, "/", dateEnd, "/", fee)
 
 			marketID, err := strconv.Atoi(targetMarket)
-			if err != nil && strings.ToLower(targetMarket) != "new" {
+			if err != nil && targetMarket != "new" {
 				println("Something on getting market ID: ", err.Error())
 			}
 
 			feeValue, err := strconv.ParseFloat(fee, 64)
 			if err != nil {
-				println("Something on parsing fee: ", err.Error())
+				println("Something on parsing fee:", err.Error())
 			}
 
-			if strings.ToLower(targetMarket) = "new" {
+			if targetMarket == "new" {
 				db.AddMarket(name, dateStart, dateEnd, feeValue)
-			}
 			} else {
-				db.AddProductCategory(name, description)
+				db.UpdateMarket(uint8(marketID), name, dateStart, dateEnd, feeValue)
 			}
-			name := r.PostFormValue("pcname" + targetProductCategory)
-			description := r.PostFormValue("pcdescription" + targetProductCategory)
-
 		}
 
 		if r.PostFormValue("run_sql") != "" {
 			paragraph = "sql"
 
 			query := r.PostFormValue("sql_query")
-			println(query)
-
-			if strings.HasPrefix(strings.ToLower(query), "select") {
-				sqlResponse += "<p style=\"font-weight: bold; text-align: center; width: 100%;\">SQL запрос: " + query + "</p>" + db.RunSqlSelect(query)
-			}
-
-			println(postalert)
+			sqlResponse += "<p style=\"font-weight: bold; text-align: center; width: 100%;\">SQL запрос: " +
+				query + "</p>" + db.RunSqlQuery(query)
 		}
 	}
 

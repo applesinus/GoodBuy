@@ -111,7 +111,7 @@
             <hr style="margin-top: 120px; width: 100%">
             <h2 style="text-align: center; width: 100%">Категории товаров</h2>
 
-            <table style="border-collapse: collapse;">
+            <table style="border-collapse: collapse; width: 100%;">
                 <tbody>
                     <tr>
                         <th>id</th>
@@ -173,7 +173,6 @@
                         <th>Даты работы</th>
                         <th>Расходы</th>
                         <th></th>
-                        <th></th>
                     </tr>
                     {{range $markets := .markets}}
                     <tr>
@@ -204,7 +203,7 @@
 
                     <tr>
                         <td>
-                            <input type="text" name="marketidNew" value="NEW" readonly
+                            <input type="text" name="marketidNEW" value="NEW" readonly
                         style="max-width: 50px; border: none; outline: none; text-align: center;">
                         </td>
                         <td style="font-weight: bold">

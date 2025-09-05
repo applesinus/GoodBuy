@@ -181,6 +181,19 @@ end;
 $$
 language plpgsql;
 
+create procedure goodbuy.update_market(
+    inp_id integer,
+    inp_name varchar,
+    inp_date_start date,
+    inp_date_end date,
+    inp_fee numeric(6, 2)
+) as $$
+begin
+    update goodbuy.markets set name = inp_name, dates = daterange(inp_date_start, inp_date_end), fee = inp_fee where id = inp_id;
+end;
+$$
+language plpgsql;
+
 create procedure goodbuy.add_product(
     name varchar,
     default_cost numeric(7, 2),
